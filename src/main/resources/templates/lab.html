@@ -35,7 +35,7 @@
     let labId = [[${labId}]];
     let userId = [[${userInfo.getId()}]];
 
-    let ref1 = database.ref(`${labId}/${userId}`);
+    let ref1 = database.ref(`labs/${labId}/${userId}`);
     ref1.once('value', (snapshot) => {
         let data = snapshot.val();
         let initStep = 0;
@@ -65,7 +65,7 @@
         steps.children[step].children[0].click();
     });
 
-    let ref2 = database.ref(`${labId}`);
+    let ref2 = database.ref(`labs/${labId}`);
     ref2.on('value', (snapshot) => {
         let number = {};
         for (let i = 0; i < steps.childElementCount; i++) {
@@ -94,4 +94,4 @@
         return null;
     });
 </script>
-<!--<script th:src="@{/js/lab_script.js}"></script>-->
+
