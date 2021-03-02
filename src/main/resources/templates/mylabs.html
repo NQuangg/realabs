@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Labs</title>
+</head>
+<body>
+    <a th:href="@{/}">Realabs</a>
+    <a th:href="@{/mylabs}">My labs</a>
+    <a th:href="@{/document}">Document</a>
+    <a th:href="@{/teacher}">Teacher</a>
+    <a th:href="@{/student}">Student</a>
+    <a th:href="@{/profile}">Profile</a>
+
+    <th:block th:if="${userInfo} != null">
+        <img th:src="${userInfo.getPicture()}" height="40px" width="40px">
+    </th:block>
+
+    <br/>
+    <br/>
+    <form th:action="@{/mylabs}" th:object="${codelab}" method="post">
+        <label for="labId">ID:</label>
+        <input type="text" id="labId" th:field="*{id}" value=""><br><br>
+        <input type="submit">
+    </form>
+    <br>
+    <th:block th:if="${list != null}">
+        <div th:each="item: ${list}" style="padding-bottom: 10px">
+            <span style="border: 2px solid black">
+                <span th:text="${item.title}"></span>
+                <a th:href="@{/lab(id=${item.source})}"><button>Start</button></a>
+            </span>
+        </div>
+
+    </th:block>
+
+</body>
+</html>

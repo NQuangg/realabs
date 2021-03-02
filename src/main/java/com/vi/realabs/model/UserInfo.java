@@ -59,4 +59,8 @@ public class UserInfo {
 	public String getPicture(){
 		return picture;
 	}
+
+	public void setId(String id) {
+		this.id = id;
+	}
 }

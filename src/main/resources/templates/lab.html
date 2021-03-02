@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<th:block th:utext="${html}"></th:block>
+
+<script src="https://www.gstatic.com/firebasejs/8.2.9/firebase-app.js"></script>
+<script src="https://www.gstatic.com/firebasejs/8.2.9/firebase-analytics.js"></script>
+<script src="https://www.gstatic.com/firebasejs/8.2.9/firebase-database.js"></script>
+<script>
+    var firebaseConfig = {
+        apiKey: "AIzaSyBNM9LH-TIe_-E3BiweGIzRPSdgH1ICpww",
+        authDomain: "fir-8f79d.firebaseapp.com",
+        databaseURL: "https://fir-8f79d-default-rtdb.firebaseio.com",
+        projectId: "fir-8f79d",
+        storageBucket: "fir-8f79d.appspot.com",
+        messagingSenderId: "671239157093",
+        appId: "1:671239157093:web:a2f5c19a9e0b5069ff5d8c",
+        measurementId: "G-ENZG6P0L16"
+    };
+    // Initialize Firebase
+    firebase.initializeApp(firebaseConfig);
+    firebase.analytics();
+</script>
+<script>
+    let list = document.getElementsByClassName('steps')[0].children[0].children;
+    for (let i = 0; i < list.length; i++) {
+        let e = document.createElement('span');
+        e.setAttribute('style', 'background:#80868b; color:white; border-radius: 20%; padding: 0 2px; margin-left:auto');
+        e.textContent = 0;
+        list[i].children[0].appendChild(e);
+    }
+
+</script>
+<script th:inline="javascript">
+    let database = firebase.database();
+    let labId = [[${labId}]];
+    let userId = [[${userInfo.getId()}]];
+
+    let ref1 = database.ref(`${labId}/${userId}`);
+    ref1.once('value', (snapshot) => {
+        let data = snapshot.val();
+        let initStep = 0;
+        let initTab = 1;
+        if (data === null) {
+            ref1.set({
+                step: initStep,
+                tabs: initTab,
+            });
+        } else {
+            ref1.update({tabs: snapshot.child('tabs').val()+1});
+        }
+    });
+
+    let steps = document.getElementsByClassName('steps')[0].children[0];
+    let step = 0;
+    steps.addEventListener('click', function(e) {
+        let target = e.target;
+        if (target.tagName === 'A' && target.getAttribute('href')[0] === '#') {
+            step = parseInt(target.getAttribute('href').slice(1));
+            ref1.update({step: step});
+        }
+    }, false);
+
+    ref1.on('value', (snapshot) => {
+        let step = snapshot.child('step').val();
+        steps.children[step].children[0].click();
+    });
+
+    let ref2 = database.ref(`${labId}`);
+    ref2.on('value', (snapshot) => {
+        let number = {};
+        for (let i = 0; i < steps.childElementCount; i++) {
+            number[i] = 0;
+        }
+
+        snapshot.forEach((childNode) => {
+            number[childNode.child('step').val()]++;
+        });
+
+        for (let i = 0; i < steps.childElementCount; i++) {
+            list[i].children[0].children[1].style.backgroundColor = number[i] !== 0 ? '#1a73e8' : '#80868b';
+            list[i].children[0].children[1].textContent = number[i];
+        }
+    });
+
+    window.addEventListener("beforeunload", function() {
+        ref1.once('value', (snapshot) => {
+            let tabs = snapshot.child('tabs').val() - 1;
+            if (tabs === 0) {
+                ref1.remove();
+            } else {
+                ref1.update({tabs: tabs});
+            }
+        });
+        return null;
+    });
+</script>
+<!--<script th:src="@{/js/lab_script.js}"></script>-->

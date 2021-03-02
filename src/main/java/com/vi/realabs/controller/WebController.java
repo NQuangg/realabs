@@ -1,8 +1,14 @@
 package com.vi.realabs.controller;
 
+import com.google.gson.Gson;
+import com.vi.realabs.model.Codelab;
+import com.vi.realabs.model.CodelabData;
 import com.vi.realabs.model.CourseWrapper;
 import com.vi.realabs.model.UserInfo;
+import com.vi.realabs.script.FileWork;
 import lombok.RequiredArgsConstructor;
+import org.jsoup.Jsoup;
+import org.jsoup.nodes.Document;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.ResolvableType;
 import org.springframework.http.HttpHeaders;
@@ -16,13 +22,15 @@ import org.springframework.security.oauth2.client.registration.ClientRegistratio
 import org.springframework.security.oauth2.client.registration.ClientRegistrationRepository;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.*;
 import org.springframework.web.client.RestTemplate;
 
+import java.io.BufferedReader;
+import java.io.File;
+import java.io.IOException;
+import java.io.InputStreamReader;
 import java.net.URI;
-import java.util.HashMap;
-import java.util.Map;
+import java.util.*;
 
 @Controller
 @RequiredArgsConstructor
@@ -62,12 +70,46 @@ public class WebController {
         return "login";
     }
 
-    @GetMapping("/labs")
-    public String getLabs(Model model, OAuth2AuthenticationToken token) {
+    @GetMapping("/mylabs")
+    public String getLabs(Model model, OAuth2AuthenticationToken token) throws IOException {
         UserInfo userInfo = callApiUserInfo(token);
         model.addAttribute("userInfo", userInfo);
+        model.addAttribute("codelab", new Codelab());
+        model.addAttribute("list", FileWork.readCodelabFile());
 
-        return "labs";
+        return "mylabs";
+    }
+
+    @PostMapping("/mylabs")
+    public String postLabs(@ModelAttribute Codelab codelab, Model model, OAuth2AuthenticationToken token) throws IOException {
+        createCodelab(codelab.getId());
+        String data = FileWork.readFile(codelab.getId(), false);
+        CodelabData codelabData = new Gson().fromJson(data, CodelabData.class);
+
+        List<CodelabData> codelabDatas = FileWork.readCodelabFile();
+        if (codelabDatas == null) {
+            codelabDatas = new ArrayList<>();
+        }
+        codelabDatas.add(codelabData);
+
+        FileWork.writeCodelabFile(new Gson().toJson(codelabDatas));
+
+        return getLabs(model, token);
+    }
+
+    @GetMapping("/lab")
+    public String get(@RequestParam(name = "id") String labId, Model model, OAuth2AuthenticationToken token) throws IOException {
+        File input = new File(labId+"/index.html");
+        Document doc = Jsoup.parse(input, "UTF-8");
+        model.addAttribute("labId", labId);
+        model.addAttribute("html", doc.toString());
+
+        UserInfo userInfo = callApiUserInfo(token);
+        String userId = Base64.getEncoder().encodeToString(userInfo.getEmail().getBytes());
+        userInfo.setId(userId);
+        model.addAttribute("userInfo", userInfo);
+
+        return "lab";
     }
 
     @GetMapping("/document")
@@ -142,4 +184,28 @@ public class WebController {
         return response.getBody();
     }
 
+    private void createCodelab(String id) throws IOException {
+        Runtime runtime = Runtime.getRuntime();
+        Process process = runtime.exec("claat export "+id);
+
+        BufferedReader stdError = new BufferedReader(new InputStreamReader(process.getErrorStream()));
+        StringBuilder str = new StringBuilder();
+        String s = null;
+
+        while ((s = stdError.readLine()) != null) {
+            str.append(s);
+        }
+
+        String folderName = str.toString().replace("ok", "").trim();
+        System.out.println(folderName);
+
+        File sourceFile = new File(folderName);
+        File targetFile = new File(id);
+        boolean checkRename = sourceFile.renameTo(targetFile);
+        if (checkRename) {
+            System.out.println("folder YES");
+        } else {
+            System.out.println("folder NO");
+        }
+    }
 }
