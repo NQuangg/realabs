@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Profile</title>
+</head>
+<body>
+    <a th:href="@{/}">Realabs</a>
+    <a th:href="@{/labs}">My labs</a>
+    <a th:href="@{/document}">Document</a>
+    <a th:href="@{/teacher}">Teacher</a>
+    <a th:href="@{/student}">Student</a>
+    <a th:href="@{/profile}">Profile</a>
+
+    <h1>Profile</h1>
+    <img th:src="${userInfo.getPicture()}" height="40px" width="40px">
+    <h2 th:text="${userInfo.getName()}"></h2>
+    <h2 th:text="${userInfo.getEmail()}"></h2>
+
+    <div>
+        <a th:href="@{/logout}">
+            <button>Logout</button>
+        </a>
+    </div>
+
+</body>
+</html>

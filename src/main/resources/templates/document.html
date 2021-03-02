@@ -1,0 +1,34 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Documentation</title>
+</head>
+<body>
+    <a th:href="@{/}">Realabs</a>
+    <a th:href="@{/labs}">My labs</a>
+    <a th:href="@{/document}">Document</a>
+    <a th:href="@{/teacher}">Teacher</a>
+    <a th:href="@{/student}">Student</a>
+    <th:block th:if="${userInfo} != null">
+        <a th:href="@{/profile}" >Profile</a>
+    </th:block>
+    <br/>
+    <br/>
+
+    <h1>This is documentation
+        <th:block th:if="${userInfo} != null">
+            <img th:src="${userInfo.getPicture()}" height="40px" width="40px">
+        </th:block>
+    </h1>
+
+    <div th:switch="${userInfo} == null">
+        <a th:case="true" th:href="@{/login}">
+            <button>Login</button>
+        </a>
+        <a th:case="false" th:href="@{/logout}">
+            <button>Logout</button>
+        </a>
+    </div>
+</body>
+</html>

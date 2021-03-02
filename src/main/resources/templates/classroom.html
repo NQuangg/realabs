@@ -1,0 +1,23 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+</head>
+<body>
+    <a th:href="@{/}">Realabs</a>
+    <a th:href="@{/labs}">My labs</a>
+    <a th:href="@{/document}">Document</a>
+    <a th:href="@{/teacher}">Teacher</a>
+    <a th:href="@{/student}">Student</a>
+    <a th:href="@{/profile}">Profile</a>
+    <th:block th:if="${userInfo} != null">
+        <img th:src="${userInfo.getPicture()}" height="40px" width="40px">
+    </th:block>
+    <h1 th:text="${id}"></h1>
+
+    <a th:href="@{/logout}">
+        <button>Logout</button>
+    </a>
+</body>
+</html>

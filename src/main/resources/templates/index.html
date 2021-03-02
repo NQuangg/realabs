@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="utf-8"/>
+    <meta http-equiv="X-UA-Compatible" content="IE=edge"/>
+    <title>Realabs</title>
+    <meta name="description" content=""/>
+    <meta name="viewport" content="width=device-width"/>
+</head>
+<body>
+    <a th:href="@{/}">Realabs</a>
+    <a th:href="@{/labs}">My labs</a>
+    <a th:href="@{/document}">Document</a>
+    <a th:href="@{/teacher}">Teacher</a>
+    <a th:href="@{/student}">Student</a>
+    <th:block th:if="${userInfo} != null">
+        <a th:href="@{/profile}" >Profile</a>
+    </th:block>
+    <br/>
+    <br/>
+
+    <h1>Welcome to Realabs
+        <th:block th:if="${userInfo} != null">
+            <img th:src="${userInfo.getPicture()}" height="40px" width="40px">
+        </th:block>
+    </h1>
+
+    <div th:switch="${userInfo} == null">
+        <a th:case="true" th:href="@{/login}">
+            <button>Login</button>
+        </a>
+        <a th:case="false" th:href="@{/logout}">
+            <button>Logout</button>
+        </a>
+    </div>
+
+</body>
+</html>
