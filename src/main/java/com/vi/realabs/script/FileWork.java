@@ -2,16 +2,16 @@ package com.vi.realabs.script;
 
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
-import com.vi.realabs.model.CodelabData;
+import com.vi.realabs.model.FileCodelab;
 
 import java.io.*;
 import java.util.List;
 
 public class FileWork {
-    public static List<CodelabData> readCodelabFile() throws IOException {
+    public static List<FileCodelab> readCodelabFile() throws IOException {
         String data = readFile("codelab.json", true);
-        List<CodelabData> codelabDatas = new Gson().fromJson(data, new TypeToken<List<CodelabData>>(){}.getType());
-        return codelabDatas;
+        List<FileCodelab> fileCodelabs = new Gson().fromJson(data, new TypeToken<List<FileCodelab>>(){}.getType());
+        return fileCodelabs;
     }
 
     public static void writeCodelabFile(String data) throws IOException {

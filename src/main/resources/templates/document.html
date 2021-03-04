@@ -2,11 +2,11 @@
 <html lang="en" xmlns:th="http://www.thymeleaf.org">
 <head>
     <meta charset="UTF-8">
-    <title>Documentation</title>
+    <title>Document</title>
 </head>
 <body>
     <a th:href="@{/}">Realabs</a>
-    <a th:href="@{/mylabs}">My labs</a>
+    <a th:href="@{/my-labs}">My labs</a>
     <a th:href="@{/document}">Document</a>
     <a th:href="@{/teacher}">Teacher</a>
     <a th:href="@{/student}">Student</a>
@@ -16,7 +16,7 @@
     <br/>
     <br/>
 
-    <h1>This is documentation
+    <h1>This is document
         <th:block th:if="${userInfo} != null">
             <img th:src="${userInfo.getPicture()}" height="40px" width="40px">
         </th:block>

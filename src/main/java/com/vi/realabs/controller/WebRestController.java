@@ -1,7 +1,7 @@
 package com.vi.realabs.controller;
 
-import com.vi.realabs.model.Course;
-import com.vi.realabs.model.CourseWrapper;
+import com.vi.realabs.model.course.Course;
+import com.vi.realabs.model.course.CourseWrapper;
 import com.vi.realabs.model.UserInfo;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -85,9 +85,17 @@ public class WebRestController {
     @GetMapping("/api/teacher/classrooms/{classroomId}")
     public String getClassroom(Model model, OAuth2AuthenticationToken token, @PathVariable(name = "classroomId") String id) {
         UserInfo userInfo = callApiUserInfo(token);
-        model.addAttribute("userInfo", userInfo);
-        model.addAttribute("id", id);
-        return "classroom";
+
+        OAuth2AuthorizedClient client = authorizedClientService.loadAuthorizedClient(token.getAuthorizedClientRegistrationId(), token.getPrincipal().getName());
+        URI uri = URI.create("https://classroom.googleapis.com/v1/courses/"+id+"/teachers");
+        RestTemplate restTemplate = new RestTemplate();
+        HttpHeaders headers = new HttpHeaders();
+        headers.set(HttpHeaders.AUTHORIZATION, "Bearer "+client.getAccessToken().getTokenValue());
+        RequestEntity<String> request = new RequestEntity<String>("", headers, HttpMethod.GET, uri);
+        ResponseEntity<String> response = restTemplate.exchange(request, String.class);
+
+
+        return response.getBody();
     }
 
     @GetMapping("/api/student")

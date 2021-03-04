@@ -1,10 +1,20 @@
 package com.vi.realabs.controller;
 
+import com.google.api.core.ApiFuture;
+import com.google.cloud.firestore.*;
+import com.google.firebase.cloud.FirestoreClient;
 import com.google.gson.Gson;
-import com.vi.realabs.model.Codelab;
-import com.vi.realabs.model.CodelabData;
-import com.vi.realabs.model.CourseWrapper;
+import com.vi.realabs.model.firestore.Classroom;
+import com.vi.realabs.model.firestore.Lab;
+import com.vi.realabs.model.LabId;
+import com.vi.realabs.model.FileCodelab;
+import com.vi.realabs.model.course.CourseWrapper;
 import com.vi.realabs.model.UserInfo;
+import com.vi.realabs.model.firestore.User;
+import com.vi.realabs.model.member.Student;
+import com.vi.realabs.model.member.StudentWrapper;
+import com.vi.realabs.model.member.Teacher;
+import com.vi.realabs.model.member.TeacherWrapper;
 import com.vi.realabs.script.FileWork;
 import lombok.RequiredArgsConstructor;
 import org.jsoup.Jsoup;
@@ -31,6 +41,7 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.net.URI;
 import java.util.*;
+import java.util.concurrent.ExecutionException;
 
 @Controller
 @RequiredArgsConstructor
@@ -40,11 +51,21 @@ public class WebController {
     @Autowired
     private ClientRegistrationRepository clientRegistrationRepository;
 
+    Firestore db = FirestoreClient.getFirestore();
+
     @GetMapping("/")
-    public String getMain(Model model, OAuth2AuthenticationToken token) {
+    public String getMain(Model model, OAuth2AuthenticationToken token) throws ExecutionException, InterruptedException {
         if (token != null) {
             UserInfo userInfo = callApiUserInfo(token);
             model.addAttribute("userInfo", userInfo);
+
+            DocumentReference docRef = db.collection("users").document(userInfo.getSub());
+            ApiFuture<DocumentSnapshot> documentSnapshot = docRef.get();
+            DocumentSnapshot document = documentSnapshot.get();
+            if (!document.exists()) {
+                User user = new User(userInfo.getName(), userInfo.getEmail(), Arrays.asList());
+                db.collection("users").document(userInfo.getSub()).set(user);
+            }
         }
 
         return "index";
@@ -70,46 +91,59 @@ public class WebController {
         return "login";
     }
 
-    @GetMapping("/mylabs")
-    public String getLabs(Model model, OAuth2AuthenticationToken token) throws IOException {
+    @GetMapping("/my-labs")
+    public String getLabs(Model model, OAuth2AuthenticationToken token) throws IOException, ExecutionException, InterruptedException {
         UserInfo userInfo = callApiUserInfo(token);
         model.addAttribute("userInfo", userInfo);
-        model.addAttribute("codelab", new Codelab());
-        model.addAttribute("list", FileWork.readCodelabFile());
+        model.addAttribute("labId", new LabId());
 
-        return "mylabs";
+        DocumentReference docRef = db.collection("users").document(userInfo.getSub());
+        ApiFuture<DocumentSnapshot> documentSnapshot = docRef.get();
+        List<Lab> labs = documentSnapshot.get().toObject(User.class).getLabs();
+        model.addAttribute("labs", labs);
+
+        return "my-labs";
     }
 
-    @PostMapping("/mylabs")
-    public String postLabs(@ModelAttribute Codelab codelab, Model model, OAuth2AuthenticationToken token) throws IOException {
-        createCodelab(codelab.getId());
-        String data = FileWork.readFile(codelab.getId(), false);
-        CodelabData codelabData = new Gson().fromJson(data, CodelabData.class);
+    @PostMapping("/my-labs")
+    public String postLabs(@ModelAttribute LabId labId, Model model, OAuth2AuthenticationToken token) throws IOException, ExecutionException, InterruptedException {
+        String userId = callApiUserInfo(token).getSub();
+        createCodelab(labId.getId(), userId);
 
-        List<CodelabData> codelabDatas = FileWork.readCodelabFile();
-        if (codelabDatas == null) {
-            codelabDatas = new ArrayList<>();
-        }
-        codelabDatas.add(codelabData);
+        String data = FileWork.readFile(userId+labId.getId(), false);
+        FileCodelab fileCodelab = new Gson().fromJson(data, FileCodelab.class);
 
-        FileWork.writeCodelabFile(new Gson().toJson(codelabDatas));
+        Lab lab = new Lab(userId+ labId.getId(), fileCodelab.getTitle());
+        DocumentReference docRef = db.collection("users").document(userId);
+        docRef.update("labs", FieldValue.arrayUnion(lab));
 
         return getLabs(model, token);
     }
 
     @GetMapping("/lab")
-    public String get(@RequestParam(name = "id") String labId, Model model, OAuth2AuthenticationToken token) throws IOException {
-        File input = new File(labId+"/index.html");
-        Document doc = Jsoup.parse(input, "UTF-8");
-        model.addAttribute("labId", labId);
+    public String getLab(@RequestParam(name = "id") String labId, @RequestParam String classroomId, Model model, OAuth2AuthenticationToken token) throws IOException {
+        UserInfo userInfo = callApiUserInfo(token);
+        if (!isTeacher(token, classroomId, userInfo.getSub()) && !isStudent(token, classroomId, userInfo.getSub())) {
+            return "denial";
+        }
+
+        File inputFile = new File(labId+"/index.html");
+        Document doc = Jsoup.parse(inputFile, "UTF-8");
         model.addAttribute("html", doc.toString());
 
-        UserInfo userInfo = callApiUserInfo(token);
-        String userId = Base64.getEncoder().encodeToString(userInfo.getEmail().getBytes());
-        userInfo.setId(userId);
         model.addAttribute("userInfo", userInfo);
+        model.addAttribute("labId", labId);
 
         return "lab";
+    }
+
+    @GetMapping("/preview-lab")
+    public String getPreviewLab(@RequestParam(name = "id") String labId, Model model, OAuth2AuthenticationToken token) throws IOException {
+        File inputFile = new File(labId+"/index.html");
+        Document doc = Jsoup.parse(inputFile, "UTF-8");
+        model.addAttribute("html", doc.toString());
+
+        return "preview-lab";
     }
 
     @GetMapping("/document")
@@ -120,6 +154,43 @@ public class WebController {
         }
 
         return "document";
+    }
+
+    @GetMapping("/student")
+    public String getStudentCourse(Model model, OAuth2AuthenticationToken token) {
+        CourseWrapper courseWrapper = callApiCourse(token, URI.create("https://classroom.googleapis.com/v1/courses?studentId=me"));
+        model.addAttribute("courses", courseWrapper.getCourses());
+
+        UserInfo userInfo = callApiUserInfo(token);
+        model.addAttribute("userInfo", userInfo);
+
+        return "student";
+    }
+
+    @GetMapping("/student/classrooms/{classroomId}")
+    public String getStudentClassroom(Model model, OAuth2AuthenticationToken token, @PathVariable(name = "classroomId") String classroomId) throws ExecutionException, InterruptedException {
+        UserInfo userInfo = callApiUserInfo(token);
+
+        if (!isStudent(token, classroomId, userInfo.getSub())) {
+            return "denial";
+        }
+
+        model.addAttribute("userInfo", userInfo);
+        model.addAttribute("classroomId", classroomId);
+
+        DocumentReference docRef = db.collection("classrooms").document(classroomId);
+        ApiFuture<DocumentSnapshot> documentSnapshot = docRef.get();
+        DocumentSnapshot document = documentSnapshot.get();
+
+        List<Lab> labs = new ArrayList<>();
+
+        if (document.exists()) {
+            labs = document.toObject(Classroom.class).getLabs();
+        }
+
+        model.addAttribute("labs", labs);
+
+        return "student-classroom";
     }
 
     @GetMapping("/teacher")
@@ -134,23 +205,73 @@ public class WebController {
     }
 
     @GetMapping("/teacher/classrooms/{classroomId}")
-    public String getClassroom(Model model, OAuth2AuthenticationToken token, @PathVariable(name = "classroomId") String id) {
+    public String getTeacherClassroom(Model model, OAuth2AuthenticationToken token, @PathVariable(name = "classroomId") String classroomId) throws ExecutionException, InterruptedException {
         UserInfo userInfo = callApiUserInfo(token);
-        model.addAttribute("userInfo", userInfo);
 
-        model.addAttribute("id", id);
-        return "classroom";
+        if (!isTeacher(token, classroomId, userInfo.getSub())) {
+            return "denial";
+        }
+
+        model.addAttribute("userInfo", userInfo);
+        model.addAttribute("classroomId", classroomId);
+
+        DocumentReference docRef = db.collection("users").document(userInfo.getSub());
+        ApiFuture<DocumentSnapshot> documentSnapshot = docRef.get();
+        DocumentSnapshot s = documentSnapshot.get();
+        List<Lab> mylabs = documentSnapshot.get().toObject(User.class).getLabs();
+
+        docRef = db.collection("classrooms").document(classroomId);
+        documentSnapshot = docRef.get();
+        DocumentSnapshot document = documentSnapshot.get();
+
+        List<Lab> havedLabs = new ArrayList<>();
+        List<Lab> currentLabs = new ArrayList<>();
+
+        if (!document.exists()) {
+            Classroom classroom = new Classroom(userInfo.getSub(), Arrays.asList());
+            docRef.set(classroom);
+            currentLabs = mylabs;
+        } else {
+            if (!document.toObject(Classroom.class).getLabs().isEmpty()) {
+                havedLabs = document.toObject(Classroom.class).getLabs();
+                label:
+                for (Lab mylab: mylabs) {
+                    for (Lab havedLab : havedLabs) {
+                        if (mylab.getId().equals(havedLab.getId())) {
+                            continue label;
+                        }
+                    }
+                    currentLabs.add(mylab);
+                }
+            }
+        }
+        model.addAttribute("currentLabs", currentLabs);
+        model.addAttribute("havedLabs", havedLabs);
+        model.addAttribute("labId", new LabId());
+
+        return "teacher-classroom";
     }
 
-    @GetMapping("/student")
-    public String getStudentCourse(Model model, OAuth2AuthenticationToken token) {
-        CourseWrapper courseWrapper = callApiCourse(token, URI.create("https://classroom.googleapis.com/v1/courses?studentId=me"));
-        model.addAttribute("courses", courseWrapper.getCourses());
-
+    @PostMapping("/teacher/classrooms/{classroomId}")
+    public String postTeacherClassroom(@ModelAttribute LabId labId, Model model, OAuth2AuthenticationToken token, @PathVariable(name = "classroomId") String classroomId) throws ExecutionException, InterruptedException {
         UserInfo userInfo = callApiUserInfo(token);
-        model.addAttribute("userInfo", userInfo);
 
-        return "student";
+        DocumentReference docRef = db.collection("users").document(userInfo.getSub());
+        ApiFuture<DocumentSnapshot> documentSnapshot = docRef.get();
+        List<Lab> labList = documentSnapshot.get().toObject(User.class).getLabs();
+
+        Lab lab = new Lab();
+        for (Lab item: labList) {
+            if (item.getId().equals(labId.getId())) {
+                lab = item;
+                break;
+            }
+        }
+
+        docRef = db.collection("classrooms").document(classroomId);
+        docRef.update("labs", FieldValue.arrayUnion(lab));
+
+        return getTeacherClassroom(model, token, classroomId);
     }
 
     @GetMapping("/profile")
@@ -184,9 +305,9 @@ public class WebController {
         return response.getBody();
     }
 
-    private void createCodelab(String id) throws IOException {
+    private void createCodelab(String labId, String userId) throws IOException {
         Runtime runtime = Runtime.getRuntime();
-        Process process = runtime.exec("claat export "+id);
+        Process process = runtime.exec("claat export "+labId);
 
         BufferedReader stdError = new BufferedReader(new InputStreamReader(process.getErrorStream()));
         StringBuilder str = new StringBuilder();
@@ -200,12 +321,50 @@ public class WebController {
         System.out.println(folderName);
 
         File sourceFile = new File(folderName);
-        File targetFile = new File(id);
+        File targetFile = new File(userId+labId);
         boolean checkRename = sourceFile.renameTo(targetFile);
         if (checkRename) {
             System.out.println("folder YES");
         } else {
             System.out.println("folder NO");
         }
+    }
+
+    private boolean isStudent(OAuth2AuthenticationToken token, String classroomId, String userId) {
+        OAuth2AuthorizedClient client = authorizedClientService.loadAuthorizedClient(token.getAuthorizedClientRegistrationId(), token.getPrincipal().getName());
+        URI uri = URI.create("https://classroom.googleapis.com/v1/courses/"+classroomId+"/students");
+        RestTemplate restTemplate = new RestTemplate();
+        HttpHeaders headers = new HttpHeaders();
+        headers.set(HttpHeaders.AUTHORIZATION, "Bearer "+client.getAccessToken().getTokenValue());
+        RequestEntity<String> request = new RequestEntity<String>("", headers, HttpMethod.GET, uri);
+        ResponseEntity<StudentWrapper> response = restTemplate.exchange(request, StudentWrapper.class);
+        List<Student> students = response.getBody().getStudents();
+
+        boolean isStudent = false;
+        for (Student student: students) {
+            if (student.getUserId().equals(userId)) {
+                isStudent = true;
+            }
+        }
+        return isStudent;
+    }
+
+    private boolean isTeacher(OAuth2AuthenticationToken token, String classroomId, String userId) {
+        OAuth2AuthorizedClient client = authorizedClientService.loadAuthorizedClient(token.getAuthorizedClientRegistrationId(), token.getPrincipal().getName());
+        URI uri = URI.create("https://classroom.googleapis.com/v1/courses/"+classroomId+"/teachers");
+        RestTemplate restTemplate = new RestTemplate();
+        HttpHeaders headers = new HttpHeaders();
+        headers.set(HttpHeaders.AUTHORIZATION, "Bearer "+client.getAccessToken().getTokenValue());
+        RequestEntity<String> request = new RequestEntity<String>("", headers, HttpMethod.GET, uri);
+        ResponseEntity<TeacherWrapper> response = restTemplate.exchange(request, TeacherWrapper.class);
+        List<Teacher> teachers = response.getBody().getTeachers();
+
+        boolean isTeacher = false;
+        for (Teacher teacher: teachers) {
+            if (teacher.getUserId().equals(userId)) {
+                isTeacher = true;
+            }
+        }
+        return isTeacher;
     }
 }

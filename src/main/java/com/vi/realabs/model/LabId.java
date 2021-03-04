@@ -3,6 +3,6 @@ package com.vi.realabs.model;
 import lombok.Data;
 
 @Data
-public class Codelab {
+public class LabId {
     private String id;
 }

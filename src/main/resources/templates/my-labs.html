@@ -6,7 +6,7 @@
 </head>
 <body>
     <a th:href="@{/}">Realabs</a>
-    <a th:href="@{/mylabs}">My labs</a>
+    <a th:href="@{/my-labs}">My labs</a>
     <a th:href="@{/document}">Document</a>
     <a th:href="@{/teacher}">Teacher</a>
     <a th:href="@{/student}">Student</a>
@@ -18,21 +18,18 @@
 
     <br/>
     <br/>
-    <form th:action="@{/mylabs}" th:object="${codelab}" method="post">
+    <form th:action="@{/my-labs}" th:object="${labId}" method="post">
         <label for="labId">ID:</label>
         <input type="text" id="labId" th:field="*{id}" value=""><br><br>
         <input type="submit">
     </form>
     <br>
-    <th:block th:if="${list != null}">
-        <div th:each="item: ${list}" style="padding-bottom: 10px">
-            <span style="border: 2px solid black">
-                <span th:text="${item.title}"></span>
-                <a th:href="@{/lab(id=${item.source})}"><button>Start</button></a>
-            </span>
-        </div>
-
-    </th:block>
+    <div th:each="item: ${labs}" style="padding-bottom: 10px">
+        <span style="border: 2px solid black">
+            <span th:text="${item.title}"></span>
+            <a th:href="@{/preview-lab(id=${item.id})}"><button>Preview</button></a>
+        </span>
+    </div>
 
 </body>
 </html>

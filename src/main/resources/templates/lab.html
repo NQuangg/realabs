@@ -1,64 +1,106 @@
 <!DOCTYPE html>
 <html lang="en" xmlns:th="http://www.thymeleaf.org">
 <th:block th:utext="${html}"></th:block>
-
+<!-- The core Firebase JS SDK is always required and must be listed first -->
 <script src="https://www.gstatic.com/firebasejs/8.2.9/firebase-app.js"></script>
+
+<!-- TODO: Add SDKs for Firebase products that you want to use
+     https://firebase.google.com/docs/web/setup#available-libraries -->
 <script src="https://www.gstatic.com/firebasejs/8.2.9/firebase-analytics.js"></script>
-<script src="https://www.gstatic.com/firebasejs/8.2.9/firebase-database.js"></script>
+
 <script>
+    // Your web app's Firebase configuration
+    // For Firebase JS SDK v7.20.0 and later, measurementId is optional
     var firebaseConfig = {
-        apiKey: "AIzaSyBNM9LH-TIe_-E3BiweGIzRPSdgH1ICpww",
-        authDomain: "fir-8f79d.firebaseapp.com",
-        databaseURL: "https://fir-8f79d-default-rtdb.firebaseio.com",
-        projectId: "fir-8f79d",
-        storageBucket: "fir-8f79d.appspot.com",
-        messagingSenderId: "671239157093",
-        appId: "1:671239157093:web:a2f5c19a9e0b5069ff5d8c",
-        measurementId: "G-ENZG6P0L16"
+        apiKey: "AIzaSyCaXpuxgsJ6nxKgqjB88l4y9VGauJKcmCM",
+        authDomain: "test-1610421956350.firebaseapp.com",
+        projectId: "test-1610421956350",
+        storageBucket: "test-1610421956350.appspot.com",
+        messagingSenderId: "183944856934",
+        appId: "1:183944856934:web:b6db6cebd31173d6b2b4a7",
+        measurementId: "G-41QBMPH5Y7"
     };
     // Initialize Firebase
     firebase.initializeApp(firebaseConfig);
     firebase.analytics();
 </script>
-<script>
+<script src="https://www.gstatic.com/firebasejs/8.2.9/firebase-database.js"></script>
+<link rel="stylesheet" th:href="@{/css/style.css}">
+<script th:inline="javascript">
+    let title = document.getElementsByTagName('title')[0];
+    title.textContent = 'Lab';
+
     let list = document.getElementsByClassName('steps')[0].children[0].children;
     for (let i = 0; i < list.length; i++) {
-        let e = document.createElement('span');
-        e.setAttribute('style', 'background:#80868b; color:white; border-radius: 20%; padding: 0 2px; margin-left:auto');
-        e.textContent = 0;
-        list[i].children[0].appendChild(e);
+        let countSpan = document.createElement('span');
+        countSpan.setAttribute('class', 'tooltip');
+        countSpan.setAttribute('style', 'background:#80868b; color:white; border-radius: 20%; padding: 0 2px; margin-left:auto');
+        countSpan.textContent = 0;
+
+        list[i].children[0].appendChild(countSpan);
     }
+
+    let userImage = [[${userInfo.getPicture()}]];
+    let devsiteUser = document.getElementsByTagName('devsite-user')[0];
+    let a = document.createElement('a');
+    a.setAttribute('href', '/profile');
+    let img = document.createElement('img')
+    img.setAttribute('style', 'height: 40px; width: 40px; border-radius: 50%;');
+    img.setAttribute('src', userImage);
+    a.appendChild(img);
+    devsiteUser.appendChild(a);
 
 </script>
 <script th:inline="javascript">
     let database = firebase.database();
     let labId = [[${labId}]];
-    let userId = [[${userInfo.getId()}]];
+    let userId = [[${userInfo.getSub()}]];
+    let userName = [[${userInfo.getName()}]];
 
     let ref1 = database.ref(`labs/${labId}/${userId}`);
     ref1.once('value', (snapshot) => {
         let data = snapshot.val();
         let initStep = 0;
         let initTab = 1;
+        let online = true;
+
         if (data === null) {
             ref1.set({
+                userName: userName,
                 step: initStep,
                 tabs: initTab,
+                online: online
             });
         } else {
-            ref1.update({tabs: snapshot.child('tabs').val()+1});
+            ref1.update({tabs: snapshot.child('tabs').val()+1, online: true});
         }
     });
 
+    // change step
     let steps = document.getElementsByClassName('steps')[0].children[0];
     let step = 0;
-    steps.addEventListener('click', function(e) {
-        let target = e.target;
+    steps.addEventListener('click', function(event) {
+        let target = event.target;
         if (target.tagName === 'A' && target.getAttribute('href')[0] === '#') {
             step = parseInt(target.getAttribute('href').slice(1));
             ref1.update({step: step});
         }
     }, false);
+    window.addEventListener('keydown', (event) => {
+        let key = event.key.toLowerCase();
+        if (key === 'arrowLeft'.toLowerCase()) {
+            if (step === 0) {
+                return;
+            }
+            step--;
+        } else if (key === 'arrowRight'.toLowerCase()) {
+            if (step === steps.children.length-1) {
+                return;
+            }
+            step++;
+        }
+        ref1.update({step: step});
+    });
 
     ref1.on('value', (snapshot) => {
         let step = snapshot.child('step').val();
@@ -67,18 +109,36 @@
 
     let ref2 = database.ref(`labs/${labId}`);
     ref2.on('value', (snapshot) => {
-        let number = {};
+        let numberStep = [];
         for (let i = 0; i < steps.childElementCount; i++) {
-            number[i] = 0;
+            numberStep[i] = {number: 0, userNames: []};
         }
 
         snapshot.forEach((childNode) => {
-            number[childNode.child('step').val()]++;
+            if (childNode.child('online').val() === true) {
+                numberStep[childNode.child('step').val()].number++;
+                numberStep[childNode.child('step').val()].userNames.push(childNode.child('userName').val());
+            }
         });
 
         for (let i = 0; i < steps.childElementCount; i++) {
-            list[i].children[0].children[1].style.backgroundColor = number[i] !== 0 ? '#1a73e8' : '#80868b';
-            list[i].children[0].children[1].textContent = number[i];
+            list[i].children[0].children[1].style.backgroundColor = numberStep[i].number !== 0 ? '#1a73e8' : '#80868b';
+            list[i].children[0].children[1].textContent = numberStep[i].number;
+
+            if (numberStep[i].number !== 0) {
+                let tooltipTextSpan = document.createElement('span');
+                tooltipTextSpan.setAttribute('class', 'tooltiptext');
+                list[i].children[0].children[1].appendChild(tooltipTextSpan);
+
+                for (let j = 0; j < numberStep[i].userNames.length; j++) {
+                    let usernameSpan = document.createElement('span');
+                    usernameSpan.textContent = numberStep[i].userNames[j];
+                    let brSpan = document.createElement('br');
+
+                    usernameSpan.appendChild(brSpan);
+                    list[i].children[0].children[1].children[0].appendChild(usernameSpan);
+                }
+            }
         }
     });
 
@@ -86,7 +146,7 @@
         ref1.once('value', (snapshot) => {
             let tabs = snapshot.child('tabs').val() - 1;
             if (tabs === 0) {
-                ref1.remove();
+                ref1.update({tabs: tabs, online: false});
             } else {
                 ref1.update({tabs: tabs});
             }

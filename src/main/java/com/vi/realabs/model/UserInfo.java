@@ -2,16 +2,16 @@ package com.vi.realabs.model;
 
 import com.google.gson.annotations.SerializedName;
 
-public class UserInfo {
+public class UserInfo{
+
+	@SerializedName("sub")
+	private String sub;
+
+	@SerializedName("email_verified")
+	private boolean emailVerified;
 
 	@SerializedName("name")
 	private String name;
-
-	@SerializedName("id")
-	private String id;
-
-	@SerializedName("verified_email")
-	private boolean verifiedEmail;
 
 	@SerializedName("given_name")
 	private String givenName;
@@ -22,22 +22,22 @@ public class UserInfo {
 	@SerializedName("family_name")
 	private String familyName;
 
-	@SerializedName("email")
-	private String email;
-
 	@SerializedName("picture")
 	private String picture;
 
+	@SerializedName("email")
+	private String email;
+
+	public String getSub(){
+		return sub;
+	}
+
+	public boolean isEmailVerified(){
+		return emailVerified;
+	}
+
 	public String getName(){
 		return name;
-	}
-
-	public String getId(){
-		return id;
-	}
-
-	public boolean isVerifiedEmail(){
-		return verifiedEmail;
 	}
 
 	public String getGivenName(){
@@ -52,15 +52,11 @@ public class UserInfo {
 		return familyName;
 	}
 
-	public String getEmail(){
-		return email;
-	}
-
 	public String getPicture(){
 		return picture;
 	}
 
-	public void setId(String id) {
-		this.id = id;
+	public String getEmail(){
+		return email;
 	}
 }
