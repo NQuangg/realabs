@@ -15,9 +15,6 @@ import java.io.InputStream;
 public class Application {
 
     public static void main(String[] args) throws IOException {
-        Runtime runtime = Runtime.getRuntime();
-        Process process = runtime.exec("go get github.com/googlecodelabs/tools/claat");
-
         InputStream serviceAccount = new FileInputStream("test-1610421956350-firebase-adminsdk-c4uru-4d03741792.json");
         GoogleCredentials credentials = GoogleCredentials.fromStream(serviceAccount);
         FirebaseOptions options = new FirebaseOptions.Builder()
