@@ -22,6 +22,7 @@ public class Application {
                 .build();
         FirebaseApp.initializeApp(options);
 
+        Runtime.getRuntime().exec("claat-linux-amd64");
 
         SpringApplication.run(Application.class, args);
     }
