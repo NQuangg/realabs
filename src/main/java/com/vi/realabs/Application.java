@@ -22,7 +22,7 @@ public class Application {
                 .build();
         FirebaseApp.initializeApp(options);
 
-        Runtime.getRuntime().exec("claat-linux-amd64");
+        Runtime.getRuntime().exec("go/bin/go get github.com/googlecodelabs/tools/claat");
 
         SpringApplication.run(Application.class, args);
     }
