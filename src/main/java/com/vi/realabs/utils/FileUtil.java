@@ -1,4 +1,4 @@
-package com.vi.realabs.script;
+package com.vi.realabs.utils;
 
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
@@ -7,7 +7,7 @@ import com.vi.realabs.model.FileCodelab;
 import java.io.*;
 import java.util.List;
 
-public class FileWork {
+public class FileUtil {
     public static List<FileCodelab> readCodelabFile() throws IOException {
         String data = readFile("codelab.json", true);
         List<FileCodelab> fileCodelabs = new Gson().fromJson(data, new TypeToken<List<FileCodelab>>(){}.getType());

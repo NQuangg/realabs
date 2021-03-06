@@ -15,7 +15,7 @@ import com.vi.realabs.model.member.Student;
 import com.vi.realabs.model.member.StudentWrapper;
 import com.vi.realabs.model.member.Teacher;
 import com.vi.realabs.model.member.TeacherWrapper;
-import com.vi.realabs.script.FileWork;
+import com.vi.realabs.utils.FileUtil;
 import lombok.RequiredArgsConstructor;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
@@ -110,7 +110,7 @@ public class WebController {
         String userId = callApiUserInfo(token).getSub();
         createCodelab(labId.getId(), userId);
 
-        String data = FileWork.readFile(userId+labId.getId(), false);
+        String data = FileUtil.readFile(userId+labId.getId(), false);
         FileCodelab fileCodelab = new Gson().fromJson(data, FileCodelab.class);
 
         Lab lab = new Lab(userId+ labId.getId(), fileCodelab.getTitle());
@@ -118,6 +118,39 @@ public class WebController {
         docRef.update("labs", FieldValue.arrayUnion(lab));
 
         return getLabs(model, token);
+    }
+
+    @GetMapping("/my-labs/delete")
+    public String deleteLabs(Model model, OAuth2AuthenticationToken token, @RequestParam(name = "id") String labId) throws IOException, ExecutionException, InterruptedException {
+        UserInfo userInfo = callApiUserInfo(token);
+
+        DocumentReference docRef = db.collection("users").document(userInfo.getSub());
+        ApiFuture<DocumentSnapshot> documentSnapshot = docRef.get();
+        List<Lab> userlabs = documentSnapshot.get().toObject(Classroom.class).getLabs();
+        for (Lab lab: userlabs) {
+            if (lab.getId().equals(labId)) {
+                docRef.update("labs", FieldValue.arrayRemove(lab));
+            }
+        }
+
+        FileUtil.deleteFile(new File(labId));
+
+        ApiFuture<QuerySnapshot> querySnapshot = db.collection("classrooms").get();
+        List<QueryDocumentSnapshot> documents = querySnapshot.get().getDocuments();
+        for (QueryDocumentSnapshot document : documents) {
+            Classroom classroom = document.toObject(Classroom.class);
+            if (classroom.getTeacherId().equals(userInfo.getSub())) {
+                List<Lab> classroomLabs = classroom.getLabs();
+                for (Lab lab: classroomLabs) {
+                    if (lab.getId().equals(labId)) {
+                        docRef = db.collection("classrooms").document(document.getId());
+                        docRef.update("labs", FieldValue.arrayRemove(lab));
+                    }
+                }
+            }
+        }
+
+        return "redirect:/my-labs";
     }
 
     @GetMapping("/lab")
@@ -217,7 +250,6 @@ public class WebController {
 
         DocumentReference docRef = db.collection("users").document(userInfo.getSub());
         ApiFuture<DocumentSnapshot> documentSnapshot = docRef.get();
-        DocumentSnapshot s = documentSnapshot.get();
         List<Lab> mylabs = documentSnapshot.get().toObject(User.class).getLabs();
 
         docRef = db.collection("classrooms").document(classroomId);
@@ -243,6 +275,8 @@ public class WebController {
                     }
                     currentLabs.add(mylab);
                 }
+            } else {
+                currentLabs = mylabs;
             }
         }
         model.addAttribute("currentLabs", currentLabs);
@@ -272,6 +306,27 @@ public class WebController {
         docRef.update("labs", FieldValue.arrayUnion(lab));
 
         return getTeacherClassroom(model, token, classroomId);
+    }
+
+    @GetMapping("/teacher/classrooms/{classroomId}/delete")
+    public String deleteTeacherClassroom(Model model, OAuth2AuthenticationToken token, @PathVariable(name = "classroomId") String classroomId, @RequestParam(name = "id") String labId) throws ExecutionException, InterruptedException {
+        UserInfo userInfo = callApiUserInfo(token);
+
+        if (!isTeacher(token, classroomId, userInfo.getSub())) {
+            return "denial";
+        }
+
+        DocumentReference docRef = db.collection("classrooms").document(classroomId);
+        ApiFuture<DocumentSnapshot> documentSnapshot = docRef.get();
+        List<Lab> labs = documentSnapshot.get().toObject(Classroom.class).getLabs();
+
+        for (Lab lab : labs) {
+            if (lab.getId().equals(labId)) {
+                docRef.update("labs", FieldValue.arrayRemove(lab));
+            }
+        }
+
+        return "redirect:/teacher/classrooms/"+classroomId;
     }
 
     @GetMapping("/profile")

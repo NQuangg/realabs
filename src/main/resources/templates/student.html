@@ -44,7 +44,6 @@
             <th>Name</th>
             <th>Room</th>
             <th>Section</th>
-            <th>Code</th>
             <th>Updated at</th>
             <th>Link classroom</th>
         </tr>
@@ -52,7 +51,6 @@
             <td th:text="${course.getName()}"></td>
             <td th:text="${course.getRoom() ?: ''}"></td>
             <td th:text="${course.getSection()} ?: ''"></td>
-            <td th:text="${course.getEnrollmentCode()} ?: ''"></td>
             <td th:text="${course.getUpdateTime()}"></td>
             <td><a th:href="@{/student/classrooms/{classroomId}(classroomId=${course.getId()})}">Link</a></td>
         </tr>

@@ -28,6 +28,7 @@
         <span style="border: 2px solid black">
             <span th:text="${item.title}"></span>
             <a th:href="@{/preview-lab(id=${item.id})}"><button>Preview</button></a>
+            <a th:href="@{/my-labs/delete(id=${item.id})}"><button>Delete</button></a>
         </span>
     </div>
 

@@ -36,6 +36,7 @@
         <span style="border: 2px solid black">
             <span th:text="${lab.title}"></span>
             <a th:href="@{/lab(id=${lab.id}, classroomId=${classroomId})}"><button>Start</button></a>
+            <a th:href="@{/teacher/classrooms/{classroomId}/delete(classroomId=${classroomId}, id=${lab.id})}"><button>Delete</button></a>
         </span>
     </div>
 </body>

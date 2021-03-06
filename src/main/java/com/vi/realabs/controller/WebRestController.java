@@ -1,8 +1,13 @@
 package com.vi.realabs.controller;
 
+import com.google.api.core.ApiFuture;
+import com.google.cloud.firestore.*;
+import com.google.firebase.cloud.FirestoreClient;
 import com.vi.realabs.model.course.Course;
 import com.vi.realabs.model.course.CourseWrapper;
 import com.vi.realabs.model.UserInfo;
+import com.vi.realabs.model.firestore.Classroom;
+import com.vi.realabs.model.firestore.Lab;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.ResolvableType;
@@ -24,6 +29,7 @@ import java.net.URI;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.ExecutionException;
 
 
 @RestController
@@ -34,6 +40,7 @@ public class WebRestController {
 
     @Autowired
     private ClientRegistrationRepository clientRegistrationRepository;
+    Firestore db = FirestoreClient.getFirestore();
 
 //    @GetMapping("/demo")
 //    public Principal get(Authentication authentication) {
@@ -128,4 +135,18 @@ public class WebRestController {
 
         return response.getBody();
     }
+
+//    @GetMapping("/api")
+//    public String get(OAuth2AuthenticationToken token) throws ExecutionException, InterruptedException {
+//        UserInfo userInfo = callApiUserInfo(token);
+//
+//        ApiFuture<QuerySnapshot> querySnapshot = db.collection("classrooms").get();
+//        List<QueryDocumentSnapshot> documents = querySnapshot.get().getDocuments();
+//        for (QueryDocumentSnapshot document : documents) {
+//            String a = document.getId();
+//            System.out.println(a);
+//        }
+//
+//        return "hi";
+//    }
 }
