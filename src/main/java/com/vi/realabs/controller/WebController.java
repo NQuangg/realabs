@@ -362,7 +362,7 @@ public class WebController {
 
     private void createCodelab(String labId, String userId) throws IOException {
         Runtime runtime = Runtime.getRuntime();
-        Process process = runtime.exec("claat export "+labId);
+        Process process = runtime.exec("go/bin/claat export "+labId);
 
         BufferedReader stdError = new BufferedReader(new InputStreamReader(process.getErrorStream()));
         StringBuilder str = new StringBuilder();
