@@ -1,12 +1,14 @@
-package com.vi.realabs.model.member;
+package com.vi.realabs.model.classroom;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import java.util.List;
+
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-public class Teacher {
-    private String userId;
+public class TeacherWrapper {
+    private List<Teacher> teachers;
 }

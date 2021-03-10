@@ -2,8 +2,8 @@ package com.vi.realabs.controller;
 
 import com.google.cloud.firestore.*;
 import com.google.firebase.cloud.FirestoreClient;
-import com.vi.realabs.model.member.Course;
-import com.vi.realabs.model.member.CourseWrapper;
+import com.vi.realabs.model.classroom.Course;
+import com.vi.realabs.model.classroom.CourseWrapper;
 import com.vi.realabs.model.UserInfo;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;

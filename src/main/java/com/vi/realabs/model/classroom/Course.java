@@ -1,4 +1,4 @@
-package com.vi.realabs.model.member;
+package com.vi.realabs.model.classroom;
 
 import com.google.gson.annotations.SerializedName;
 
