@@ -166,7 +166,6 @@ public class WebController {
 
         model.addAttribute("userInfo", userInfo);
         model.addAttribute("labId", labId);
-        model.addAttribute("classroomId", classroomId);
 
         return "lab";
     }
@@ -424,8 +423,4 @@ public class WebController {
         return isTeacher;
     }
 
-    @GetMapping("/**")
-    public String get() {
-        return "404";
-    }
 }
