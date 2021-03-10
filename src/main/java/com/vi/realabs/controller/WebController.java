@@ -157,7 +157,7 @@ public class WebController {
     public String getLab(@RequestParam(name = "id") String labId, @RequestParam String classroomId, Model model, OAuth2AuthenticationToken token) throws IOException {
         UserInfo userInfo = callApiUserInfo(token);
         if (!isTeacher(token, classroomId, userInfo.getSub()) && !isStudent(token, classroomId, userInfo.getSub())) {
-            return "denial";
+            return "404";
         }
 
         File inputFile = new File(labId+"/index.html");
@@ -166,6 +166,7 @@ public class WebController {
 
         model.addAttribute("userInfo", userInfo);
         model.addAttribute("labId", labId);
+        model.addAttribute("classroomId", classroomId);
 
         return "lab";
     }
@@ -205,7 +206,7 @@ public class WebController {
         UserInfo userInfo = callApiUserInfo(token);
 
         if (!isStudent(token, classroomId, userInfo.getSub())) {
-            return "denial";
+            return "404";
         }
 
         model.addAttribute("userInfo", userInfo);
@@ -242,7 +243,7 @@ public class WebController {
         UserInfo userInfo = callApiUserInfo(token);
 
         if (!isTeacher(token, classroomId, userInfo.getSub())) {
-            return "denial";
+            return "404";
         }
 
         model.addAttribute("userInfo", userInfo);
@@ -313,7 +314,7 @@ public class WebController {
         UserInfo userInfo = callApiUserInfo(token);
 
         if (!isTeacher(token, classroomId, userInfo.getSub())) {
-            return "denial";
+            return "404";
         }
 
         DocumentReference docRef = db.collection("classrooms").document(classroomId);
@@ -421,5 +422,10 @@ public class WebController {
             }
         }
         return isTeacher;
+    }
+
+    @GetMapping("/**")
+    public String get() {
+        return "404";
     }
 }

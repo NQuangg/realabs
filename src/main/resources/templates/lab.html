@@ -55,8 +55,9 @@
     let labId = [[${labId}]];
     let userId = [[${userInfo.getSub()}]];
     let userName = [[${userInfo.getName()}]];
+    let classroomId = [[${classroomId}]];
 
-    let ref1 = database.ref(`labs/${labId}/${userId}`);
+    let ref1 = database.ref(`labs/${classroomId}${labId}/${userId}`);
     ref1.once('value', (snapshot) => {
         let data = snapshot.val();
         let initStep = 0;
