@@ -1,6 +1,11 @@
 .tooltip {
     position: relative;
     display: inline-block;
+    background:#80868b;
+    color:white;
+    border-radius: 20%;
+    padding: 0 2px;
+    margin-left: auto;
 }
 
 .tooltip .tooltiptext {

@@ -7,8 +7,8 @@ import com.google.gson.Gson;
 import com.vi.realabs.model.firestore.Classroom;
 import com.vi.realabs.model.firestore.Lab;
 import com.vi.realabs.model.LabId;
-import com.vi.realabs.model.FileCodelab;
-import com.vi.realabs.model.course.CourseWrapper;
+import com.vi.realabs.model.LabFile;
+import com.vi.realabs.model.member.CourseWrapper;
 import com.vi.realabs.model.UserInfo;
 import com.vi.realabs.model.firestore.User;
 import com.vi.realabs.model.member.Student;
@@ -111,9 +111,9 @@ public class WebController {
         createCodelab(labId.getId(), userId);
 
         String data = FileUtil.readFile(userId+labId.getId(), false);
-        FileCodelab fileCodelab = new Gson().fromJson(data, FileCodelab.class);
+        LabFile labFile = new Gson().fromJson(data, LabFile.class);
 
-        Lab lab = new Lab(userId+ labId.getId(), fileCodelab.getTitle());
+        Lab lab = new Lab(userId+ labId.getId(), labFile.getTitle());
         DocumentReference docRef = db.collection("users").document(userId);
         docRef.update("labs", FieldValue.arrayUnion(lab));
 

@@ -1,6 +1,6 @@
-package com.vi.realabs.model.course;
+package com.vi.realabs.model.member;
 
-import com.vi.realabs.model.course.Course;
+import com.vi.realabs.model.member.Course;
 import lombok.Data;
 
 import java.util.List;
