@@ -3,65 +3,72 @@
 <head>
     <meta charset="UTF-8">
     <title>Teacher</title>
-    <style>
-        table {
-            border-collapse: collapse;
-            width: 100%;
-        }
-
-        th, td {
-            text-align: left;
-            padding: 8px;
-        }
-
-        tr:nth-child(even){background-color: #f2f2f2}
-
-        th {
-            background-color: #4CAF50;
-            color: white;
-        }
-    </style>
+    <link th:href="@{/css/footer.css}" rel="stylesheet" type="text/css"/>
+    <link th:href="@{/css/teacher.css}" rel="stylesheet" type="text/css"/>
 </head>
 <body>
-    <a th:href="@{/}">Realabs</a>
-    <a th:href="@{/my-labs}">My labs</a>
-    <a th:href="@{/document}">Document</a>
-    <a th:href="@{/teacher}">Teacher</a>
-    <a th:href="@{/student}">Student</a>
-    <a th:href="@{/profile}">Profile</a>
-    <br/>
-    <br/>
+    <div class="header">
+        <nav class="navbar">
+            <div class="container-1">
+                <a class="navbar-brand" href="/"><b>Realabs</b></a>
 
-    <h1>Teacher
-       <th:block th:if="${userInfo} != null">
-          <img th:src="${userInfo.getPicture()}" height="40px" width="40px">
-       </th:block>
-    </h1>
-
-    <table>
-        <tr>
-            <th>Name</th>
-            <th>Room</th>
-            <th>Section</th>
-            <th>Code</th>
-            <th>Updated at</th>
-            <th>Link classroom</th>
-        </tr>
-        <tr th:each="course: ${courses}">
-            <td th:text="${course.getName()}"></td>
-            <td th:text="${course.getRoom() ?: ''}"></td>
-            <td th:text="${course.getSection()} ?: ''"></td>
-            <td th:text="${course.getEnrollmentCode()} ?: ''"></td>
-            <td th:text="${course.getUpdateTime()}"></td>
-            <td><a th:href="@{/teacher/classrooms/{classroomId}(classroomId=${course.getId()})}">Link</a></td>
-        </tr>
-    </table>
-
-    <div>
-        <a th:href="@{/logout}">
-            <button>Logout</button>
-        </a>
+                <ul class="navbar-nav">
+                    <li class="nav-item">
+                        <a th:href="@{/my-labs}">My labs</a>
+                    </li>
+                    <li class="nav-item">
+                        <a th:href="@{/document}">Document</a>
+                    </li>
+                    <li class="nav-item">
+                        <a th:href="@{/teacher}">Teacher</a>
+                    </li>
+                    <li class="nav-item">
+                        <a th:href="@{/student}">Student</a>
+                    </li>
+                    <li class="nav-item">
+                        <th:block th:if="${userInfo} != null">
+                            <a th:href="@{/profile}" >Profile</a>
+                        </th:block>
+                    </li>
+                </ul>
+                <th:block th:if="${userInfo} != null">
+                    <img class="avatar" th:src="${userInfo.getPicture()}" height="40px" width="40px">
+                </th:block>
+                <div th:switch="${userInfo} == null">
+                    <a th:case="true" th:href="@{/login}">
+                        <button class="btn-login-1">Login</button>
+                    </a>
+                    <a th:case="false" th:href="@{/logout}">
+                        <button class="btn-login-1">Logout</button>
+                    </a>
+                </div>
+            </div>
+        </nav>
     </div>
+
+    <div class="teacher">
+        <img class="teacher-img" src="/img/student.png">
+        <h1>Welcome Back, Code-Chemist</h1>
+        <div class="teacher-list">
+            <div class="teacher-card" th:each="course: ${courses}">
+                <div class="teacher-card-1">
+                    <h3 th:text="${course.getName()}"></h3>
+                    <img id="teacher-img-1" src="/img/index-1.png">
+                </div>
+
+                <div class="teacher-card-2">
+                    <p><b>Code: </b><span th:text="${course.getEnrollmentCode()} ?: ''"></span></p>
+                    <p><b>Link classroom: </b><a id="teacher-a" th:href="@{/teacher/classrooms/{classroomId}(classroomId=${course.getId()})}">Link</a></p>
+                    <p><b>Last update: </b><span th:text="${course.getUpdateTime()}"></span></p>
+                </div>
+                <!--            <td th:text="${course.getRoom() ?: ''}"></td>-->
+                <!--            <td th:text="${course.getSection()} ?: ''"></td>-->
+                <!--            <td th:text="${course.getEnrollmentCode()} ?: ''"></td>-->
+            </div>
+        </div>
+    </div>
+
+    <div th:replace="footer :: footer"></div>
 
 </body>
 </html>
