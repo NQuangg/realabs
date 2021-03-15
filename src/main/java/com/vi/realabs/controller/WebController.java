@@ -7,14 +7,14 @@ import com.google.gson.Gson;
 import com.vi.realabs.model.firestore.Classroom;
 import com.vi.realabs.model.firestore.Lab;
 import com.vi.realabs.model.LabId;
-import com.vi.realabs.model.FileCodelab;
-import com.vi.realabs.model.course.CourseWrapper;
+import com.vi.realabs.model.LabFile;
+import com.vi.realabs.model.classroom.CourseWrapper;
 import com.vi.realabs.model.UserInfo;
 import com.vi.realabs.model.firestore.User;
-import com.vi.realabs.model.member.Student;
-import com.vi.realabs.model.member.StudentWrapper;
-import com.vi.realabs.model.member.Teacher;
-import com.vi.realabs.model.member.TeacherWrapper;
+import com.vi.realabs.model.classroom.Student;
+import com.vi.realabs.model.classroom.StudentWrapper;
+import com.vi.realabs.model.classroom.Teacher;
+import com.vi.realabs.model.classroom.TeacherWrapper;
 import com.vi.realabs.utils.FileUtil;
 import lombok.RequiredArgsConstructor;
 import org.jsoup.Jsoup;
@@ -111,9 +111,9 @@ public class WebController {
         createCodelab(labId.getId(), userId);
 
         String data = FileUtil.readFile(userId+labId.getId(), false);
-        FileCodelab fileCodelab = new Gson().fromJson(data, FileCodelab.class);
+        LabFile labFile = new Gson().fromJson(data, LabFile.class);
 
-        Lab lab = new Lab(userId+ labId.getId(), fileCodelab.getTitle());
+        Lab lab = new Lab(userId+ labId.getId(), labFile.getTitle());
         DocumentReference docRef = db.collection("users").document(userId);
         docRef.update("labs", FieldValue.arrayUnion(lab));
 
@@ -157,7 +157,7 @@ public class WebController {
     public String getLab(@RequestParam(name = "id") String labId, @RequestParam String classroomId, Model model, OAuth2AuthenticationToken token) throws IOException {
         UserInfo userInfo = callApiUserInfo(token);
         if (!isTeacher(token, classroomId, userInfo.getSub()) && !isStudent(token, classroomId, userInfo.getSub())) {
-            return "denial";
+            return "404";
         }
 
         File inputFile = new File(labId+"/index.html");
@@ -205,7 +205,7 @@ public class WebController {
         UserInfo userInfo = callApiUserInfo(token);
 
         if (!isStudent(token, classroomId, userInfo.getSub())) {
-            return "denial";
+            return "404";
         }
 
         model.addAttribute("userInfo", userInfo);
@@ -242,7 +242,7 @@ public class WebController {
         UserInfo userInfo = callApiUserInfo(token);
 
         if (!isTeacher(token, classroomId, userInfo.getSub())) {
-            return "denial";
+            return "404";
         }
 
         model.addAttribute("userInfo", userInfo);
@@ -313,7 +313,7 @@ public class WebController {
         UserInfo userInfo = callApiUserInfo(token);
 
         if (!isTeacher(token, classroomId, userInfo.getSub())) {
-            return "denial";
+            return "404";
         }
 
         DocumentReference docRef = db.collection("classrooms").document(classroomId);
@@ -422,4 +422,5 @@ public class WebController {
         }
         return isTeacher;
     }
+
 }

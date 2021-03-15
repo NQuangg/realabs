@@ -1,13 +1,10 @@
 package com.vi.realabs.controller;
 
-import com.google.api.core.ApiFuture;
 import com.google.cloud.firestore.*;
 import com.google.firebase.cloud.FirestoreClient;
-import com.vi.realabs.model.course.Course;
-import com.vi.realabs.model.course.CourseWrapper;
+import com.vi.realabs.model.classroom.Course;
+import com.vi.realabs.model.classroom.CourseWrapper;
 import com.vi.realabs.model.UserInfo;
-import com.vi.realabs.model.firestore.Classroom;
-import com.vi.realabs.model.firestore.Lab;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.ResolvableType;
@@ -29,7 +26,6 @@ import java.net.URI;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.concurrent.ExecutionException;
 
 
 @RestController

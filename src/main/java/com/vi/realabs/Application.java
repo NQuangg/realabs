@@ -22,8 +22,6 @@ public class Application {
                 .build();
         FirebaseApp.initializeApp(options);
 
-        Runtime.getRuntime().exec("go/bin/claat.exe");
-
         SpringApplication.run(Application.class, args);
     }
 

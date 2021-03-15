@@ -27,62 +27,121 @@
 <script src="https://www.gstatic.com/firebasejs/8.2.9/firebase-database.js"></script>
 <link rel="stylesheet" th:href="@{/css/style.css}">
 <script th:inline="javascript">
-    let title = document.getElementsByTagName('title')[0];
-    title.textContent = 'Lab';
-
-    let list = document.getElementsByClassName('steps')[0].children[0].children;
-    for (let i = 0; i < list.length; i++) {
-        let countSpan = document.createElement('span');
-        countSpan.setAttribute('class', 'tooltip');
-        countSpan.setAttribute('style', 'background:#80868b; color:white; border-radius: 20%; padding: 0 2px; margin-left:auto');
-        countSpan.textContent = 0;
-
-        list[i].children[0].appendChild(countSpan);
-    }
-
-    let userImage = [[${userInfo.getPicture()}]];
-    let devsiteUser = document.getElementsByTagName('devsite-user')[0];
-    let a = document.createElement('a');
-    a.setAttribute('href', '/profile');
-    let img = document.createElement('img')
-    img.setAttribute('style', 'height: 36px; width: 36px; border-radius: 50%;');
-    img.setAttribute('src', userImage);
-    a.appendChild(img);
-    devsiteUser.appendChild(a);
-</script>
-<script th:inline="javascript">
     let database = firebase.database();
     let labId = [[${labId}]];
     let userId = [[${userInfo.getSub()}]];
     let userName = [[${userInfo.getName()}]];
 
-    let ref1 = database.ref(`labs/${labId}/${userId}`);
-    ref1.once('value', (snapshot) => {
+    let liTag = document.querySelectorAll('.steps ol li');
+    for (let i = 0; i < liTag.length; i++) {
+        let tooltip = document.createElement('span');
+        tooltip.setAttribute('class', 'tooltip');
+        tooltip.textContent = 0;
+
+        liTag[i].children[0].appendChild(tooltip);
+    }
+
+    let userImage = [[${userInfo.getPicture()}]];
+    let devsiteUser = document.querySelector('devsite-user');
+    devsiteUser.style.display = 'flex';
+    devsiteUser.innerHTML = '' +
+        '<a href="/profile">' +
+        `<img src="${userImage}" style="height: 36px; width: 36px; border-radius: 50%;">` +
+        '</a>' +
+        '<button id="chatBtn">' +
+        '    <span class="material-icons">groups</span>' +
+        '    <span id="userNumber"><b>0</b></span>' +
+        '</button>';
+
+    let codelabTitle = document.getElementById('codelab-title');
+    codelabTitle.innerHTML += '' +
+        '<div id="chatScreen" hidden>' +
+        '    <div id="chatView"></div>' +
+        '    <div style="flex:1; background-color:blue; display:flex">' +
+        '        <textarea id="input"></textarea>' +
+        '        <button id="sendBtn" style="flex:1">' +
+        '            <span class="material-icons">send</span>' +
+        '        </button>' +
+        '    </div>' +
+        '</div>';
+
+    let chatBtn = document.getElementById('chatBtn');
+    let chatScreen = document.getElementById('chatScreen');
+    let fabs = document.getElementById('fabs');
+    let isOpened = false;
+    chatBtn.addEventListener('click', () => {
+        if (isOpened) {
+            chatScreen.setAttribute('hidden', '');
+            fabs.removeAttribute('hidden');
+        } else {
+            chatScreen.removeAttribute('hidden');
+            fabs.setAttribute('hidden', '');
+        }
+        isOpened = !isOpened;
+    });
+
+    let chatView = document.getElementById('chatView');
+    let chatRef = database.ref(`labs/${labId}/chats`);
+
+    chatRef.on('value', (snapshot) => {
+        chatView.innerHTML = '';
+        snapshot.forEach((childNode) => {
+            if (childNode.child('id').val() === userId) {
+                chatView.innerHTML += '' +
+                    '<div class="message message-me">' +
+                    `     <p>${childNode.child('message').val()}</p>` +
+                    '</div>';
+            } else {
+                chatView.innerHTML += '' +
+                    '<div class="message">' +
+                    `     <img src="${childNode.child('image').val()}">` +
+                    `     <p>${childNode.child('message').val()}</p>` +
+                    '</div>';
+            }
+        });
+    });
+
+    let sendBtn = document.getElementById('sendBtn');
+    sendBtn.addEventListener('click', () => {
+        let input = document.getElementById('input');
+        if (input.value.trim().length !== 0) {
+            chatRef.push().set({
+                id: userId,
+                image: userImage,
+                message: input.value.trim(),
+            })
+        }
+        input.value = '';
+    });
+
+
+    let userRef = database.ref(`labs/${labId}/users/${userId}`);
+    userRef.once('value', (snapshot) => {
         let data = snapshot.val();
         let initStep = 0;
         let initTab = 1;
         let online = true;
 
         if (data === null) {
-            ref1.set({
+            userRef.set({
                 userName: userName,
                 step: initStep,
                 tabs: initTab,
                 online: online
             });
         } else {
-            ref1.update({tabs: snapshot.child('tabs').val()+1, online: true});
+            userRef.update({tabs: snapshot.child('tabs').val()+1, online: true});
         }
     });
 
     // change step
-    let steps = document.getElementsByClassName('steps')[0].children[0];
+    let olTag = document.querySelector('.steps ol');
     let step = 0;
-    steps.addEventListener('click', function(event) {
+    olTag.addEventListener('click', function(event) {
         let target = event.target;
         if (target.tagName === 'A' && target.getAttribute('href')[0] === '#') {
             step = parseInt(target.getAttribute('href').slice(1));
-            ref1.update({step: step});
+            userRef.update({step: step});
         }
     }, false);
     window.addEventListener('keydown', (event) => {
@@ -93,23 +152,23 @@
             }
             step--;
         } else if (key === 'arrowRight'.toLowerCase()) {
-            if (step === steps.children.length-1) {
+            if (step === liTag.length-1) {
                 return;
             }
             step++;
         }
-        ref1.update({step: step});
+        userRef.update({step: step});
     });
 
-    ref1.on('value', (snapshot) => {
+    userRef.on('value', (snapshot) => {
         let step = snapshot.child('step').val();
-        steps.children[step].children[0].click();
+        liTag[step].children[0].click();
     });
 
-    let ref2 = database.ref(`labs/${labId}`);
-    ref2.on('value', (snapshot) => {
+    let labRef = database.ref(`labs/${labId}/users`);
+    labRef.on('value', (snapshot) => {
         let numberStep = [];
-        for (let i = 0; i < steps.childElementCount; i++) {
+        for (let i = 0; i < liTag.length; i++) {
             numberStep[i] = {number: 0, userNames: []};
         }
 
@@ -120,34 +179,40 @@
             }
         });
 
-        for (let i = 0; i < steps.childElementCount; i++) {
-            list[i].children[0].children[1].style.backgroundColor = numberStep[i].number !== 0 ? '#1a73e8' : '#80868b';
-            list[i].children[0].children[1].textContent = numberStep[i].number;
+        let tooltips = document.querySelectorAll('.steps ol li a .tooltip');
+        for (let i = 0; i < tooltips.length; i++) {
+            tooltips[i].style.backgroundColor = numberStep[i].number !== 0 ? '#1a73e8' : '#80868b';
+            tooltips[i].textContent = numberStep[i].number;
 
             if (numberStep[i].number !== 0) {
-                let tooltipTextSpan = document.createElement('span');
-                tooltipTextSpan.setAttribute('class', 'tooltiptext');
-                list[i].children[0].children[1].appendChild(tooltipTextSpan);
+                let tooltipText = document.createElement('span');
+                tooltipText.setAttribute('class', 'tooltiptext');
 
                 for (let j = 0; j < numberStep[i].userNames.length; j++) {
                     let usernameSpan = document.createElement('span');
-                    usernameSpan.textContent = numberStep[i].userNames[j];
-                    let brSpan = document.createElement('br');
+                    usernameSpan.innerHTML += `${numberStep[i].userNames[j]}<br>`;
 
-                    usernameSpan.appendChild(brSpan);
-                    list[i].children[0].children[1].children[0].appendChild(usernameSpan);
+                    tooltipText.appendChild(usernameSpan);
                 }
+
+                tooltips[i].appendChild(tooltipText);
             }
         }
+
+        let userNumber = 0;
+        for (let i = 0; i < tooltips.length; i++) {
+            userNumber += numberStep[i].number;
+        }
+        document.querySelector('#userNumber b').innerHTML = userNumber-1;
     });
 
     window.addEventListener("beforeunload", function() {
-        ref1.once('value', (snapshot) => {
+        userRef.once('value', (snapshot) => {
             let tabs = snapshot.child('tabs').val() - 1;
             if (tabs === 0) {
-                ref1.update({tabs: tabs, online: false});
+                userRef.update({tabs: tabs, online: false});
             } else {
-                ref1.update({tabs: tabs});
+                userRef.update({tabs: tabs});
             }
         });
         return null;
