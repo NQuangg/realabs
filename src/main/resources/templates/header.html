@@ -1,0 +1,22 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <link th:href="@{/css/header.css}" rel="stylesheet" type="text/css"/>
+    <title>Header</title>
+</head>
+<body>
+    <header th:fragment="header">
+            <nav class="navbar">
+                <div class="container-1">
+                    <a class="navbar-brand" href="/"><b>Realabs</b></a>
+
+                    <ul class="navbar-nav">
+                        <li class="nav-item">
+                            <a href="/document" class="nav-link">Document</a>
+                        </li>
+                    </ul>
+                </div>
+            </nav>
+    </header>
+</body>
+</html>

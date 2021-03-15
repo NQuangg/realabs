@@ -1,0 +1,67 @@
+
+@import url('https://fonts.googleapis.com/css2?family=Exo:wght@500&display=swap');
+
+body {
+    font-family: 'Exo', sans-serif;
+}
+
+ul {
+    list-style-type: none;
+    margin: 0;
+    padding: 0;
+}
+
+li {
+    display: inline;
+}
+
+.container-1 {
+    display: flex;
+}
+
+.navbar-nav {
+    list-style: none;
+    display: flex;
+    width: 70%;
+    margin-left: 25%;
+    margin-top: 1%;
+}
+
+.container-1 a {
+    text-decoration: none;
+    color: black;
+}
+
+.navbar {
+    padding: 1%;
+}
+
+
+.navbar-brand {
+    width: 30%;
+    margin-left: 5%;
+    font-size: 20px;
+}
+
+.nav-item {
+    margin-right: 5%;
+}
+
+.btn-login-1 {
+    background-color: #FFD000;
+    padding: 10px;
+    border-radius: 5px;
+    font-size: 15px;
+    color: white !important;
+    font-weight: 700;
+    border: none;
+    /* width: 20px !important; */
+}
+
+.btn-login-1:hover {
+    opacity: 0.75;
+}
+
+.avatar {
+    margin-right: 3%;
+}

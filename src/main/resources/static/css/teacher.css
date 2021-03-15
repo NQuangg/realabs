@@ -1,0 +1,131 @@
+table {
+    border-collapse: collapse;
+    width: 100%;
+}
+
+th, td {
+    text-align: left;
+    padding: 8px;
+}
+
+tr:nth-child(even){background-color: #f2f2f2}
+
+th {
+    background-color: #4CAF50;
+    color: white;
+}
+
+@import url('https://fonts.googleapis.com/css2?family=Exo:wght@500&display=swap');
+
+body {
+    font-family: 'Exo', sans-serif;
+}
+
+ul {
+    list-style-type: none;
+    margin: 0;
+    padding: 0;
+}
+
+li {
+    display: inline;
+}
+
+.container-1 {
+    display: flex;
+}
+
+.navbar-nav {
+    list-style: none;
+    display: flex;
+    width: 70%;
+    margin-left: 25%;
+    margin-top: 1%;
+}
+
+.container-1 a {
+    text-decoration: none;
+    color: black;
+}
+
+.navbar {
+    padding: 1%;
+}
+
+
+.navbar-brand {
+    width: 30%;
+    margin-left: 5%;
+    font-size: 20px;
+}
+
+.nav-item {
+    margin-right: 5%;
+}
+
+.btn-login-1 {
+    background-color: #FFD000;
+    padding: 10px;
+    border-radius: 5px;
+    font-size: 15px;
+    color: white !important;
+    font-weight: 700;
+    border: none;
+    /* width: 20px !important; */
+}
+
+.btn-login-1:hover {
+    opacity: 0.75;
+}
+
+.avatar {
+    margin-right: 3%;
+}
+
+/*teacher*/
+
+.teacher-img {
+    width: 100%;
+}
+
+.teacher h1 {
+    text-align: center;
+    margin-bottom: 5%;
+    margin-top: 3%;
+    font-weight: 900;
+}
+
+.teacher-list {
+    display: flex;
+    flex-wrap: wrap;
+    margin-left: 5%;
+}
+
+#teacher-img-1 {
+    width: 150px;
+    height: 140px;
+}
+
+.teacher-card-1 {
+    display: flex;
+    background-color: #FFD000;
+    border-radius: 40px 40px 0px 0px;
+}
+
+.teacher-card {
+    margin-right: 5%;
+    margin-bottom: 5%;
+    width: 28%;
+}
+
+.teacher-card-1 h3 {
+    margin-left: 10%;
+    margin-top: 10%;
+    width: 40%;
+}
+
+.teacher-card-2 {
+    border: 2px solid #FFD000;
+    border-radius: 0px 0px 40px 40px;
+    padding: 10px;
+}

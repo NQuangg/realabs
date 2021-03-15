@@ -3,36 +3,178 @@
 <head>
     <meta charset="utf-8"/>
     <meta http-equiv="X-UA-Compatible" content="IE=edge"/>
+    <link th:href="@{/css/index.css}" rel="stylesheet" type="text/css"/>
+    <link th:href="@{/css/footer.css}" rel="stylesheet" type="text/css"/>
     <title>Realabs</title>
     <meta name="description" content=""/>
     <meta name="viewport" content="width=device-width"/>
 </head>
 <body>
-    <a th:href="@{/}">Realabs</a>
-    <a th:href="@{/my-labs}">My labs</a>
-    <a th:href="@{/document}">Document</a>
-    <a th:href="@{/teacher}">Teacher</a>
-    <a th:href="@{/student}">Student</a>
-    <th:block th:if="${userInfo} != null">
-        <a th:href="@{/profile}" >Profile</a>
-    </th:block>
-    <br/>
-    <br/>
+    <div class="header">
+        <nav class="navbar">
+            <div class="container-1">
+                <a class="navbar-brand" href="/"><b>Realabs</b></a>
 
-    <h1>Welcome to Realabs
-        <th:block th:if="${userInfo} != null">
-            <img th:src="${userInfo.getPicture()}" height="40px" width="40px">
-        </th:block>
-    </h1>
-
-    <div th:switch="${userInfo} == null">
-        <a th:case="true" th:href="@{/login}">
-            <button>Login</button>
-        </a>
-        <a th:case="false" th:href="@{/logout}">
-            <button>Logout</button>
-        </a>
+                <ul class="navbar-nav">
+                    <li class="nav-item">
+                        <a th:href="@{/my-labs}">My labs</a>
+                    </li>
+                    <li class="nav-item">
+                        <a th:href="@{/document}">Document</a>
+                    </li>
+                    <li class="nav-item">
+                        <a th:href="@{/teacher}">Teacher</a>
+                    </li>
+                    <li class="nav-item">
+                        <a th:href="@{/student}">Student</a>
+                    </li>
+                    <li class="nav-item">
+                        <th:block th:if="${userInfo} != null">
+                            <a th:href="@{/profile}" >Profile</a>
+                        </th:block>
+                    </li>
+                </ul>
+                <th:block th:if="${userInfo} != null">
+                    <img class="avatar" th:src="${userInfo.getPicture()}" height="40px" width="40px">
+                </th:block>
+                <div th:switch="${userInfo} == null">
+                    <a th:case="true" th:href="@{/login}">
+                        <button class="btn-login-1">Login</button>
+                    </a>
+                    <a th:case="false" th:href="@{/logout}">
+                        <button class="btn-login-1">Logout</button>
+                    </a>
+                </div>
+            </div>
+        </nav>
     </div>
+    <div>
+        <th:block th:if="${userInfo} != null">
+            <div class="index-1">
+                <div class="index-1-1">
+                    <h1>Learn To Code</h1>
+                    <p>Welcome to Codelabs - the code learning website will help you learn your programing language</p>
+                </div>
+                <div class="index-1-2">
+                    <img src="img/index-1.png" class="index-img-1"/>
+                </div>
+            </div>
+        </th:block>
+        <div th:if="${userInfo} == null">
+            <div class="index-1">
+                <div class="index-1-1">
+                    <h1>Learn To Code</h1>
+                    <p>Welcome to Codelabs - the code learning website will help you learn your programing language</p>
+                    <a href="/login" class="btn-login-2">Sign in now</a>
+                </div>
+                <div class="index-1-2">
+                    <img src="img/index-1.png" class="index-img-1"/>
+                </div>
+            </div>
+        </div>
 
+        <div class="index-2">
+            <h2>Let See What We Can Help You!</h2>
+            <div class="index-2-1">
+                <div class="index-card" id="card-1">
+                    <div class="card-top">
+                        <img src="/img/realtime.png"/>
+                    </div>
+                    <div class="card-bottom">
+                        <h2>Realtime Classroom</h2>
+                        <p>Some quick example text to build on the card title and make up the bulk of the card's content.</p>
+                    </div>
+                </div>
+                <div class="index-card" id="card-2">
+                    <div class="card-top">
+                        <img src="/img/fast.png"/>
+                    </div>
+                    <div class="card-bottom">
+                        <h2>Fast Connection</h2>
+                        <p>Some quick example text to build on the card title and make up the bulk of the card's content.</p>
+                    </div>
+                </div>
+                <div class="index-card" id="card-3">
+                    <div class="card-top">
+                        <img src="/img/practice.png"/>
+                    </div>
+                    <div class="card-bottom">
+                        <h2>Basic 101 Practice</h2>
+                        <p>Some quick example text to build on the card title and make up the bulk of the card's content.</p>
+                    </div>
+
+                </div>
+                <div class="index-card" id="card-4">
+                    <div class="card-top">
+                        <img src="/img/management.png"/>
+                    </div>
+                    <div class="card-bottom">
+                        <h2>Management</h2>
+                        <p>Some quick example text to build on the card title and make up the bulk of the card's content.</p>
+                    </div>
+
+                </div>
+            </div>
+        </div>
+
+        <div class="index-3">
+            <div class="index-3-1">
+                <div class="card-lang" id="card-lang-1">
+                    <h1>Java</h1>
+                </div>
+                <div class="card-lang" id="card-lang-2">
+                    <h1>Python</h1>
+                </div>
+
+            </div>
+            <div class="index-3-2">
+                <div class="card-lang" id="card-lang-3">
+                    <h1>PHP</h1>
+                </div>
+            </div>
+            <div class="index-3-3">
+                <h1>Languages You Can Learn With Us?</h1>
+                <p>Our Tech Explorer's Toolkit is packed with free resources for anyone curious about getting a job in tech. No matter what stage you're at in your journey into tech, our bi-monthly Toolkit will bring the resources you need straight to your inbox.</p>
+            </div>
+        </div>
+
+        <div class="index-4">
+            <h2>Our Newest Labs</h2>
+            <div class="index-4-2">
+                <div class="index-4-card">
+                    <div class="card-4-img">
+                        <img src="/img/fast.png">
+                    </div>
+                    <div class="cont-4">
+                        <h2>Fast Connection</h2>
+                        <p>Some quick example text to build on the card title and make up the bulk of the card's content.</p>
+                        <a href="/" class="btn-more">More</a>
+                    </div>
+                </div>
+                <div class="index-4-card">
+                    <div class="card-4-img">
+                        <img src="/img/fast.png"/>
+                    </div>
+                    <div class="cont-4">
+                        <h2>Fast Connection</h2>
+                        <p>Some quick example text to build on the card title and make up the bulk of the card's content.</p>
+                        <a href="/" class="btn-more">More</a>
+                    </div>
+                </div>
+                <div class="index-4-card">
+                    <div class="card-4-img">
+                        <img src="/img/fast.png"/>
+                    </div>
+                    <div class="cont-4">
+                        <h2>Fast Connection</h2>
+                        <p>Some quick example text to build on the card title and make up the bulk of the card's content.</p>
+                        <a href="/" class="btn-more">More</a>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+    </div>
+    <div th:replace="footer :: footer"></div>
 </body>
 </html>

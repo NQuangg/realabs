@@ -1,0 +1,154 @@
+table {
+    border-collapse: collapse;
+    width: 100%;
+}
+
+th, td {
+    text-align: left;
+    padding: 8px;
+}
+
+tr:nth-child(even){background-color: #f2f2f2}
+
+th {
+    background-color: #4CAF50;
+    color: white;
+}
+
+@import url('https://fonts.googleapis.com/css2?family=Exo:wght@500&display=swap');
+
+body {
+    font-family: 'Exo', sans-serif;
+}
+
+ul {
+    list-style-type: none;
+    margin: 0;
+    padding: 0;
+}
+
+li {
+    display: inline;
+}
+
+.container-1 {
+    display: flex;
+}
+
+.navbar-nav {
+    list-style: none;
+    display: flex;
+    width: 70%;
+    margin-left: 25%;
+    margin-top: 1%;
+}
+
+.container-1 a {
+    text-decoration: none;
+    color: black;
+}
+
+.navbar {
+    padding: 1%;
+}
+
+
+.navbar-brand {
+    width: 30%;
+    margin-left: 5%;
+    font-size: 20px;
+}
+
+.nav-item {
+    margin-right: 5%;
+}
+
+.btn-login-1 {
+    background-color: #FFD000;
+    padding: 10px;
+    border-radius: 5px;
+    font-size: 15px;
+    color: white !important;
+    font-weight: 700;
+    border: none;
+    /* width: 20px !important; */
+}
+
+.btn-login-1:hover {
+    opacity: 0.75;
+}
+
+.avatar {
+    margin-right: 3%;
+}
+
+/* profile */
+
+.profile {
+    margin-bottom: 7%;
+    margin-top: 5%;
+}
+
+.profile-img {
+    width: 100%;
+}
+
+.profile h1 {
+    text-align: center;
+    font-size: 50px;
+}
+
+.profile-card {
+    box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rgba(0, 0, 0, 0.19);
+    width: 50%;
+    margin-left: 25%;
+    background-color: #FFD000;
+    border-radius: 40px;
+}
+
+.card-top {
+    text-align: center;
+}
+
+#avatar {
+    margin-top: 10%;
+    border-radius: 50%;
+    margin-bottom: 10%;
+    width: 40%;
+    border: 15px solid #FFDC42;
+}
+
+.card-bottom {
+    background-color: white !important;
+    border-radius: 0px 0px 40px 40px;
+    padding: 30px;
+}
+
+.card-bottom p {
+    border: 1px solid gray;
+    padding: 7px;
+    border-radius: 10px;
+}
+
+.edit-btn {
+    padding: 10px;
+    background-color: #FFD000;
+    border: none;
+    border-radius: 5px;
+}
+
+.edit-btn {
+    padding: 10px;
+    background-color: #FFD000;
+    border: none;
+    border-radius: 5px;
+    margin-left: 43%;
+    font-weight: 600;
+    color: white;
+}
+
+.edit-btn:hover {
+    border: 1px solid #FFD000;
+    background-color: white;
+    color: #FFD000;
+}
