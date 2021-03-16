@@ -135,15 +135,14 @@
     });
 
     // change step
-    let olTag = document.querySelector('.steps ol');
     let step = 0;
-    olTag.addEventListener('click', function(event) {
-        let target = event.target;
-        if (target.tagName === 'A' && target.getAttribute('href')[0] === '#') {
-            step = parseInt(target.getAttribute('href').slice(1));
+    for (let i = 0; i < liTag.length; i++) {
+        liTag[i].addEventListener('click', () => {
+            step = i;
             userRef.update({step: step});
-        }
-    }, false);
+        });
+    }
+
     window.addEventListener('keydown', (event) => {
         let key = event.key.toLowerCase();
         if (key === 'arrowLeft'.toLowerCase()) {

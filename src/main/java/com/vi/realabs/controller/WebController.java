@@ -372,7 +372,7 @@ public class WebController {
             str.append(s);
         }
 
-        String folderName = str.toString().replace("ok", "").trim();
+        String folderName = str.toString().replaceFirst("ok", "").trim();
         System.out.println(folderName);
 
         File sourceFile = new File(folderName);
