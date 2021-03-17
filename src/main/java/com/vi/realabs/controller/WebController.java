@@ -215,11 +215,16 @@ public class WebController {
         ApiFuture<DocumentSnapshot> documentSnapshot = docRef.get();
         DocumentSnapshot document = documentSnapshot.get();
 
-        List<Lab> labs = new ArrayList<>();
-
-        if (document.exists()) {
-            labs = document.toObject(Classroom.class).getLabs();
+        if (!document.exists()) {
+            Teacher teacher = getTeacher(token, classroomId);
+            Classroom classroom = new Classroom(teacher.getUserId(), Arrays.asList());
+            docRef.set(classroom);
         }
+
+        docRef = db.collection("classrooms").document(classroomId);
+        documentSnapshot = docRef.get();
+        document = documentSnapshot.get();
+        List<Lab> labs = document.toObject(Classroom.class).getLabs();
 
         model.addAttribute("labs", labs);
 
@@ -423,4 +428,16 @@ public class WebController {
         return isTeacher;
     }
 
+    private Teacher getTeacher(OAuth2AuthenticationToken token, String classroomId) {
+        OAuth2AuthorizedClient client = authorizedClientService.loadAuthorizedClient(token.getAuthorizedClientRegistrationId(), token.getPrincipal().getName());
+        URI uri = URI.create("https://classroom.googleapis.com/v1/courses/"+classroomId+"/teachers");
+        RestTemplate restTemplate = new RestTemplate();
+        HttpHeaders headers = new HttpHeaders();
+        headers.set(HttpHeaders.AUTHORIZATION, "Bearer "+client.getAccessToken().getTokenValue());
+        RequestEntity<String> request = new RequestEntity<String>("", headers, HttpMethod.GET, uri);
+        ResponseEntity<TeacherWrapper> response = restTemplate.exchange(request, TeacherWrapper.class);
+        List<Teacher> teachers = response.getBody().getTeachers();
+
+        return teachers.get(0);
+    }
 }
