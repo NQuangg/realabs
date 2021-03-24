@@ -166,6 +166,7 @@ public class WebController {
 
         model.addAttribute("userInfo", userInfo);
         model.addAttribute("labId", labId);
+        model.addAttribute("classroomId", classroomId);
 
         return "lab";
     }

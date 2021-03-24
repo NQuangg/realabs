@@ -18,6 +18,7 @@ public class Application {
         InputStream serviceAccount = new FileInputStream("test-1610421956350-firebase-adminsdk-c4uru-4d03741792.json");
         GoogleCredentials credentials = GoogleCredentials.fromStream(serviceAccount);
         FirebaseOptions options = new FirebaseOptions.Builder()
+                .setDatabaseUrl("https://test-1610421956350-default-rtdb.firebaseio.com/")
                 .setCredentials(credentials)
                 .build();
         FirebaseApp.initializeApp(options);

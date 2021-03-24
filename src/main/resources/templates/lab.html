@@ -25,10 +25,14 @@
     firebase.analytics();
 </script>
 <script src="https://www.gstatic.com/firebasejs/8.2.9/firebase-database.js"></script>
+<script src="/webjars/sockjs-client/sockjs.min.js"></script>
+<script src="/webjars/stomp-websocket/stomp.min.js"></script>
 <link rel="stylesheet" th:href="@{/css/style.css}">
+
 <script th:inline="javascript">
     let database = firebase.database();
     let labId = [[${labId}]];
+    let classroomId = [[${classroomId}]];
     let userId = [[${userInfo.getSub()}]];
     let userName = [[${userInfo.getName()}]];
 
@@ -36,10 +40,77 @@
     for (let i = 0; i < liTag.length; i++) {
         let tooltip = document.createElement('span');
         tooltip.setAttribute('class', 'tooltip');
-        tooltip.textContent = 0;
+        tooltip.textContent = '0';
 
         liTag[i].children[0].appendChild(tooltip);
     }
+
+    let stompClient = null;
+    connect();
+    setTimeout(() => {
+        stompClient.send(`/init/${classroomId}${labId}`, {}, JSON.stringify({'userId': userId, 'userName': userName}));
+    }, 2000);
+
+    let tooltips = document.querySelectorAll('.steps ol li a .tooltip');
+    function connect() {
+        let socket = new SockJS('/websocket');
+        stompClient = Stomp.over(socket);
+        stompClient.connect({}, function (frame) {
+            console.log('Connected: ' + frame);
+            stompClient.subscribe(`/room/${classroomId}${labId}`, function (socketInfo) {
+                let content = JSON.parse(socketInfo.body);
+                for (let i = 0; i < tooltips.length; i++) {
+                    if (content[i] !== undefined) {
+                        let numb = content[i].length;
+                        tooltips[i].style.backgroundColor = numb !== 0 ? '#1a73e8' : '#80868b';
+                        tooltips[i].textContent = numb;
+                    } else {
+                        tooltips[i].style.backgroundColor = '#80868b';
+                        tooltips[i].textContent = 0;
+                    }
+                }
+            });
+        });
+    }
+
+    // change step
+    let step = 0;
+    for (let i = 0; i < liTag.length; i++) {
+        liTag[i].addEventListener('click', () => {
+            step = i;
+            stompClient.send(`/changeStep/${classroomId}${labId}`, {}, JSON.stringify({'userId': userId, 'step': step}));
+        });
+    }
+
+    let previousStep = document.getElementById('previous-step');
+    let nextStep = document.getElementById('next-step');
+
+    previousStep.addEventListener('click', () => {
+        step--;
+        stompClient.send(`/changeStep/${classroomId}${labId}`, {}, JSON.stringify({'userId': userId, 'step': step}));
+    });
+
+    nextStep.addEventListener('click', () => {
+        step++;
+        stompClient.send(`/changeStep/${classroomId}${labId}`, {}, JSON.stringify({'userId': userId, 'step': step}));
+    });
+
+    // window.addEventListener('keydown', (event) => {
+    //     let key = event.key.toLowerCase();
+    //     if (key === 'arrowLeft'.toLowerCase()) {
+    //         // if (step === 0) {
+    //         //     return;
+    //         // }
+    //         // step--;
+    //         console.log(key);
+    //     } else if (key === 'arrowRight'.toLowerCase()) {
+    //         if (step === liTag.length-1) {
+    //             return;
+    //         }
+    //         step++;
+    //     }
+    //     stompClient.send(`/changeStep/${classroomId}${labId}`, {}, JSON.stringify({'userId': userId, 'step': step}));
+    // });
 
     let userImage = [[${userInfo.getPicture()}]];
     let devsiteUser = document.querySelector('devsite-user');
@@ -115,105 +186,56 @@
     });
 
 
-    let userRef = database.ref(`labs/${labId}/users/${userId}`);
-    userRef.once('value', (snapshot) => {
-        let data = snapshot.val();
-        let initStep = 0;
-        let initTab = 1;
-        let online = true;
 
-        if (data === null) {
-            userRef.set({
-                userName: userName,
-                step: initStep,
-                tabs: initTab,
-                online: online
-            });
-        } else {
-            userRef.update({tabs: snapshot.child('tabs').val()+1, online: true});
-        }
-    });
-
-    // change step
-    let step = 0;
-    for (let i = 0; i < liTag.length; i++) {
-        liTag[i].addEventListener('click', () => {
-            step = i;
-            userRef.update({step: step});
-        });
-    }
-
-    window.addEventListener('keydown', (event) => {
-        let key = event.key.toLowerCase();
-        if (key === 'arrowLeft'.toLowerCase()) {
-            if (step === 0) {
-                return;
-            }
-            step--;
-        } else if (key === 'arrowRight'.toLowerCase()) {
-            if (step === liTag.length-1) {
-                return;
-            }
-            step++;
-        }
-        userRef.update({step: step});
-    });
-
-    userRef.on('value', (snapshot) => {
-        let step = snapshot.child('step').val();
-        liTag[step].children[0].click();
-    });
-
-    let labRef = database.ref(`labs/${labId}/users`);
-    labRef.on('value', (snapshot) => {
-        let numberStep = [];
-        for (let i = 0; i < liTag.length; i++) {
-            numberStep[i] = {number: 0, userNames: []};
-        }
-
-        snapshot.forEach((childNode) => {
-            if (childNode.child('online').val() === true) {
-                numberStep[childNode.child('step').val()].number++;
-                numberStep[childNode.child('step').val()].userNames.push(childNode.child('userName').val());
-            }
-        });
-
-        let tooltips = document.querySelectorAll('.steps ol li a .tooltip');
-        for (let i = 0; i < tooltips.length; i++) {
-            tooltips[i].style.backgroundColor = numberStep[i].number !== 0 ? '#1a73e8' : '#80868b';
-            tooltips[i].textContent = numberStep[i].number;
-
-            if (numberStep[i].number !== 0) {
-                let tooltipText = document.createElement('span');
-                tooltipText.setAttribute('class', 'tooltiptext');
-
-                for (let j = 0; j < numberStep[i].userNames.length; j++) {
-                    let usernameSpan = document.createElement('span');
-                    usernameSpan.innerHTML += `${numberStep[i].userNames[j]}<br>`;
-
-                    tooltipText.appendChild(usernameSpan);
-                }
-
-                tooltips[i].appendChild(tooltipText);
-            }
-        }
-
-        let userNumber = 0;
-        for (let i = 0; i < tooltips.length; i++) {
-            userNumber += numberStep[i].number;
-        }
-        document.querySelector('#userNumber b').innerHTML = userNumber-1;
-    });
+    // userRef.on('value', (snapshot) => {
+    //     let step = snapshot.child('step').val();
+    //     liTag[step].children[0].click();
+    // });
+    //
+    // let labRef = database.ref(`labs/${labId}/users`);
+    // labRef.on('value', (snapshot) => {
+    //     let numberStep = [];
+    //     for (let i = 0; i < liTag.length; i++) {
+    //         numberStep[i] = {number: 0, userNames: []};
+    //     }
+    //
+    //     snapshot.forEach((childNode) => {
+    //         if (childNode.child('online').val() === true) {
+    //             numberStep[childNode.child('step').val()].number++;
+    //             numberStep[childNode.child('step').val()].userNames.push(childNode.child('userName').val());
+    //         }
+    //     });
+    //
+    //     let tooltips = document.querySelectorAll('.steps ol li a .tooltip');
+    //     for (let i = 0; i < tooltips.length; i++) {
+    //         tooltips[i].style.backgroundColor = numberStep[i].number !== 0 ? '#1a73e8' : '#80868b';
+    //         tooltips[i].textContent = numberStep[i].number;
+    //
+    //         if (numberStep[i].number !== 0) {
+    //             let tooltipText = document.createElement('span');
+    //             tooltipText.setAttribute('class', 'tooltiptext');
+    //
+    //             for (let j = 0; j < numberStep[i].userNames.length; j++) {
+    //                 let usernameSpan = document.createElement('span');
+    //                 usernameSpan.innerHTML += `${numberStep[i].userNames[j]}<br>`;
+    //
+    //                 tooltipText.appendChild(usernameSpan);
+    //             }
+    //
+    //             tooltips[i].appendChild(tooltipText);
+    //         }
+    //     }
+    //
+    //     let userNumber = 0;
+    //     for (let i = 0; i < tooltips.length; i++) {
+    //         userNumber += numberStep[i].number;
+    //     }
+    //     document.querySelector('#userNumber b').innerHTML = userNumber-1;
+    // });
 
     window.addEventListener("beforeunload", function() {
-        userRef.once('value', (snapshot) => {
-            let tabs = snapshot.child('tabs').val() - 1;
-            if (tabs === 0) {
-                userRef.update({tabs: tabs, online: false});
-            } else {
-                userRef.update({tabs: tabs});
-            }
-        });
+        stompClient.send(`/close/${classroomId}${labId}`, {}, JSON.stringify({'userId': userId, 'userName': userName}));
+        stompClient.disconnect();
         return null;
     });
 </script>
