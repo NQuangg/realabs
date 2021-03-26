@@ -10,6 +10,7 @@ import java.util.Map;
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-public class MemberWrapper {
+public class Room {
     private Map<String, Member> members;
+    private List<Chat> chats;
 }
