@@ -96,7 +96,9 @@ public class WebSocketController {
                 infoMap.put(step, new ArrayList<>());
             }
 
-            infoMap.get(step).add(value.getUserName());
+            if (value.isOnline() == true) {
+                infoMap.get(step).add(value.getUserName());
+            }
         });
 
         return infoMap;
