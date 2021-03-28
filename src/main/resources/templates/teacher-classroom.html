@@ -3,41 +3,71 @@
 <head>
     <meta charset="UTF-8">
     <title>Classroom</title>
+    <link th:href="@{/css/footer.css}" rel="stylesheet" type="text/css"/>
+    <link th:href="@{/css/teacher-classroom.css}" rel="stylesheet" type="text/css"/>
 </head>
 <body>
-    <a th:href="@{/}">Realabs</a>
-    <a th:href="@{/my-labs}">My labs</a>
-    <a th:href="@{/document}">Document</a>
-    <a th:href="@{/teacher}">Teacher</a>
-    <a th:href="@{/student}">Student</a>
-    <a th:href="@{/profile}">Profile</a>
-    <th:block th:if="${userInfo} != null">
-        <img th:src="${userInfo.getPicture()}" height="40px" width="40px">
-    </th:block>
-    <h1 th:text="${classroomId}">
-        <a th:href="@{/logout}">
-            <button>Logout</button>
-        </a>
-    </h1>
+    <div class="header">
+        <nav class="navbar">
+            <div class="container-1">
+                <a class="navbar-brand" href="/"><b>Realabs</b></a>
 
-    <form th:action="@{/teacher/classrooms/{classroomId}(classroomId=${classroomId})}" th:object="${labId}" method="post">
-        <select th:field="*{id}">
+                <ul class="navbar-nav">
+                    <li class="nav-item">
+                        <a th:href="@{/my-labs}">My labs</a>
+                    </li>
+                    <li class="nav-item">
+                        <a th:href="@{/document}">Document</a>
+                    </li>
+                    <li class="nav-item">
+                        <a th:href="@{/teacher}">Teacher</a>
+                    </li>
+                    <li class="nav-item">
+                        <a th:href="@{/student}">Student</a>
+                    </li>
+                    <li class="nav-item">
+                        <th:block th:if="${userInfo} != null">
+                            <a th:href="@{/profile}" >Profile</a>
+                        </th:block>
+                    </li>
+                </ul>
+                <th:block th:if="${userInfo} != null">
+                    <img class="avatar" th:src="${userInfo.getPicture()}" height="40px" width="40px">
+                </th:block>
+                <div th:switch="${userInfo} == null">
+                    <a th:case="true" th:href="@{/login}">
+                        <button class="btn-login-1">Login</button>
+                    </a>
+                    <a th:case="false" th:href="@{/logout}">
+                        <button class="btn-login-1">Logout</button>
+                    </a>
+                </div>
+            </div>
+        </nav>
+    </div>
+
+    <form class="teacher-class" th:action="@{/teacher/classrooms/{classroomId}(classroomId=${classroomId})}" th:object="${labId}" method="post">
+        <select th:field="*{id}" id="teacher-class-multi">
             <option th:each="item: ${currentLabs}"
                     th:value="${item.id}"
                     th:text="${item.title}">
             </option>
         </select>
         <br><br>
-        <input type="submit" value="add">
+        <input type="submit" value="Add" id="add-btn">
     </form>
     <br/>
     <br/>
-    <div th:each="lab: ${havedLabs}" style="padding-bottom: 10px">
-        <span style="border: 2px solid black">
-            <span th:text="${lab.title}"></span>
-            <a th:href="@{/lab(id=${lab.id}, classroomId=${classroomId})}"><button>Start</button></a>
-            <a th:href="@{/teacher/classrooms/{classroomId}/delete(classroomId=${classroomId}, id=${lab.id})}"><button>Delete</button></a>
+    <div class="teacher-labs" th:each="lab: ${havedLabs}" style="padding-bottom: 10px">
+        <span style="border: 2px solid black" id="span-labs">
+            <span th:text="${lab.title}" id="title-lab"></span>
+            <div id="btns-gen">
+                <a class="btn-labs" th:href="@{/lab(id=${lab.id}, classroomId=${classroomId})}"><button>Start</button></a>
+                <a class="btn-labs" th:href="@{/teacher/classrooms/{classroomId}/delete(classroomId=${classroomId}, id=${lab.id})}"><button>Delete</button></a>
+            </div>
         </span>
     </div>
+
+    <div th:replace="footer :: footer"></div>
 </body>
 </html>

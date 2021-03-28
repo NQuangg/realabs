@@ -57,9 +57,10 @@
                 </div>
 
                 <div class="teacher-card-2">
+                    <p><b>Room: </b><a id="teacher-a" th:text="${course.getRoom() ?: ''}"></a></p>
                     <p><b>Code: </b><span th:text="${course.getEnrollmentCode()} ?: ''"></span></p>
-                    <p><b>Link classroom: </b><a id="teacher-a" th:href="@{/teacher/classrooms/{classroomId}(classroomId=${course.getId()})}">Link</a></p>
                     <p><b>Last update: </b><span th:text="${course.getUpdateTime()}"></span></p>
+                    <a id="more-btn" th:href="@{/teacher/classrooms/{classroomId}(classroomId=${course.getId()})}">More</a>
                 </div>
                 <!--            <td th:text="${course.getRoom() ?: ''}"></td>-->
                 <!--            <td th:text="${course.getSection()} ?: ''"></td>-->

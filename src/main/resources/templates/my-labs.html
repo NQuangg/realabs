@@ -55,10 +55,12 @@
     <br>
 
     <div class="my-labs" th:each="item: ${labs}" style="padding-bottom: 10px">
-        <span style="border: 2px solid black">
-            <span th:text="${item.title}"></span>
-            <a th:href="@{/preview-lab(id=${item.id})}"><button>Preview</button></a>
-            <a th:href="@{/my-labs/delete(id=${item.id})}"><button>Delete</button></a>
+        <span style="border: 2px solid black" id="span-labs">
+            <span  id="title-lab" th:text="${item.title}"></span>
+            <div id="btns-gen">
+                <a class="btn-labs" th:href="@{/preview-lab(id=${item.id})}"><button>Preview</button></a>
+                <a class="btn-labs" th:href="@{/my-labs/delete(id=${item.id})}"><button>Delete</button></a>
+            </div>
         </span>
     </div>
 

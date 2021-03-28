@@ -96,3 +96,34 @@ li {
 #labs-btn:hover {
     background-color: #FFD000;
 }
+
+#lab-gen {
+    display: flex;
+    justify-content: center;
+    flex-direction: row;
+}
+
+#span-labs {
+    display: flex;
+    justify-content: center;
+    flex-direction: column;
+    border: none !important;
+    margin-bottom: 3%;
+}
+
+.btn-labs button {
+    border: 1px solid #FFD000;
+    background-color: white;
+    padding: 10px;
+    font-weight: 700;
+    border-radius: 10px;
+}
+
+.btn-labs button:hover {
+    background: #FFD000;
+    color: white;
+}
+
+#title-lab {
+    margin-bottom: 3%;
+}

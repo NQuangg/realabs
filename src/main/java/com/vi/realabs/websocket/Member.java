@@ -16,9 +16,14 @@ public class Member {
 
     public void increaseTabs() {
         tabs += 1;
+        online = true;
     }
 
     public void decreaseTabs() {
         tabs -= 1;
+        if (tabs <= 0) {
+            tabs = 0;
+            online = false;
+        }
     }
 }
