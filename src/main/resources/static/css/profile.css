@@ -64,7 +64,7 @@ li {
 }
 
 .btn-login-1 {
-    background-color: #FFD000;
+    background-color: #185ABD;
     padding: 10px;
     border-radius: 5px;
     font-size: 15px;
@@ -96,13 +96,14 @@ li {
 .profile h1 {
     text-align: center;
     font-size: 50px;
+    margin-top: 5%;
 }
 
 .profile-card {
     box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rgba(0, 0, 0, 0.19);
     width: 50%;
     margin-left: 25%;
-    background-color: #FFD000;
+    background-color: #185ABD;
     border-radius: 40px;
 }
 
@@ -115,7 +116,7 @@ li {
     border-radius: 50%;
     margin-bottom: 10%;
     width: 40%;
-    border: 15px solid #FFDC42;
+    border: 15px solid #5485CE;
 }
 
 .card-bottom {
@@ -132,14 +133,14 @@ li {
 
 .edit-btn {
     padding: 10px;
-    background-color: #FFD000;
+    background-color: #185ABD;
     border: none;
     border-radius: 5px;
 }
 
 .edit-btn {
     padding: 10px;
-    background-color: #FFD000;
+    background-color: #185ABD;
     border: none;
     border-radius: 5px;
     margin-left: 43%;
@@ -148,7 +149,7 @@ li {
 }
 
 .edit-btn:hover {
-    border: 1px solid #FFD000;
+    border: 1px solid #185ABD;
     background-color: white;
-    color: #FFD000;
+    color: #185ABD;
 }

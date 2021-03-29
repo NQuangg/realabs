@@ -48,7 +48,7 @@ li {
 }
 
 .btn-login-1 {
-    background-color: #FFD000;
+    background-color: #185ABD;
     padding: 10px;
     border-radius: 5px;
     font-size: 15px;
@@ -86,7 +86,7 @@ li {
 }
 
 #labs-btn {
-    border: 1px solid #FFD000;
+    border: 1px solid #185ABD;
     background-color: white;
     padding: 10px;
     font-weight: 700;
@@ -94,7 +94,7 @@ li {
 }
 
 #labs-btn:hover {
-    background-color: #FFD000;
+    background-color: #185ABD;
 }
 
 #lab-gen {
@@ -112,7 +112,7 @@ li {
 }
 
 .btn-labs button {
-    border: 1px solid #FFD000;
+    border: 1px solid #185ABD;
     background-color: white;
     padding: 10px;
     font-weight: 700;
@@ -120,7 +120,7 @@ li {
 }
 
 .btn-labs button:hover {
-    background: #FFD000;
+    background: #185ABD;
     color: white;
 }
 
