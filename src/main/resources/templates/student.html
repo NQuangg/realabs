@@ -47,17 +47,24 @@
     </div>
 
     <div class="student">
-        <img class="student-img" src="/img/student.png">
-        <h1>Let check out your labs</h1>
-        <div th:each="course: ${courses}" class="stu-content">
-            <div class="stu-1">
-                <h3 th:text="${course.getName()}"></h3>
-                <div class="stu-2">
-                    <a th:href="@{/student/classrooms/{classroomId}(classroomId=${course.getId()})}">Link class</a>
-                    <p>Last update: <span th:text="${course.getUpdateTime()}"></span></p>
+        <h1>Welcome Back, Code-Chemist</h1>
+        <div class="student-list">
+            <div class="student-card" th:each="course: ${courses}">
+                <div class="student-card-1">
+                    <h3 th:text="${course.getName()}"></h3>
+                    <img id="student-img-1" src="/img/index-1.png">
                 </div>
+
+                <div class="student-card-2">
+                    <p><b>Room: </b><a id="student-a" th:text="${course.getRoom() ?: ''}"></a></p>
+                    <p><b>Code: </b><span th:text="${course.getEnrollmentCode()} ?: ''"></span></p>
+                    <p id="last-update"><b>Last update: </b><span th:text="${course.getUpdateTime()}"></span></p>
+                    <a id="more-btn" th:href="@{/student/classrooms/{classroomId}(classroomId=${course.getId()})}">Check out new update!</a>
+                </div>
+                <!--            <td th:text="${course.getRoom() ?: ''}"></td>-->
+                <!--            <td th:text="${course.getSection()} ?: ''"></td>-->
+                <!--            <td th:text="${course.getEnrollmentCode()} ?: ''"></td>-->
             </div>
-            <button class="menu-btn"><img src="img/menu.png"></button>
         </div>
     </div>
 
