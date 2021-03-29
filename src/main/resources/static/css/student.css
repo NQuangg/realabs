@@ -133,3 +133,77 @@ li {
 .stu-2 a:hover {
     color: #FFD000;
 }
+
+/*student*/
+
+.student-img {
+    width: 100%;
+}
+
+.student h1 {
+    text-align: center;
+    margin-bottom: 5%;
+    margin-top: 3%;
+    font-weight: 900;
+}
+
+.student-list {
+    display: flex;
+    flex-wrap: wrap;
+    margin-left: 5%;
+}
+
+#student-img-1 {
+    width: 150px;
+    height: 140px;
+}
+
+.student-card-1 {
+    display: flex;
+    background-color: #FFD000;
+    border-radius: 40px 40px 0px 0px;
+}
+
+.student-card {
+    margin-right: 5%;
+    margin-bottom: 5%;
+    width: 28%;
+}
+
+.student-card-1 h3 {
+    margin-left: 10%;
+    margin-top: 10%;
+    width: 40%;
+}
+
+.student-card-2 {
+    border: 2px solid #FFD000;
+    border-radius: 0px 0px 40px 40px;
+    padding: 10px;
+    height: 60%;
+}
+
+#more-btn {
+    border: 1px solid #FFD000;
+    background-color: white;
+    padding: 10px;
+    font-weight: 700;
+    border-radius: 10px;
+    color: #FFD000;
+    text-decoration: none;
+    margin-top: 3%;
+    margin-left: 20%;
+}
+
+#more-btn:hover {
+    background: #FFD000;
+    color: white;
+}
+
+.student-card-2 p {
+    margin-bottom: 7%;
+}
+
+#last-update {
+    margin-bottom: 10%;
+}
