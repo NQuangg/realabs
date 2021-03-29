@@ -48,7 +48,7 @@ li {
 }
 
 .btn-login-1 {
-    background-color: #FFD000;
+    background-color: #185ABD;
     padding: 10px;
     border-radius: 5px;
     font-size: 15px;
@@ -86,18 +86,18 @@ li {
 }
 
 #add-btn {
-    border: 1px solid #FFD000;
+    border: 1px solid #185ABD;
     background-color: white;
     padding: 10px;
     font-weight: 700;
     border-radius: 10px;
-    color: #FFD000;
+    color: #185ABD;
     text-decoration: none;
     width: 10%;
 }
 
 #add-btn:hover {
-    background: #FFD000;
+    background: #185ABD;
     color: white;
 }
 
@@ -125,7 +125,7 @@ li {
 
 
 .btn-labs button {
-    border: 1px solid #FFD000;
+    border: 1px solid #185ABD;
     background-color: white;
     padding: 10px;
     font-weight: 700;
@@ -133,7 +133,7 @@ li {
 }
 
 .btn-labs button:hover {
-    background: #FFD000;
+    background: #185ABD;
     color: white;
 }
 

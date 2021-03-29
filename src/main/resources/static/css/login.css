@@ -5,7 +5,7 @@ body {
 }
 
 .login-page {
-    background-image: url("/img/login-back.png");
+    background-image: url("/img/login-new.png");
     margin-top: 5%;
     height: 500px;
 }
@@ -14,7 +14,7 @@ body {
     border-radius: 35px;
     width: 30%;
     height: auto;
-    border: 2px solid #FFD000;
+    border: 2px solid #185ABD;
     padding: 3%;
     text-align: center;
     margin: auto;
@@ -23,7 +23,7 @@ body {
 }
 
 .login h2 {
-    color: #FFD000;
+    color: #185ABD;
     margin-bottom: 5%;
     font-weight: 800;
 }
@@ -31,9 +31,9 @@ body {
 span {
     display: flex;
     flex-direction: row;
-    border: 1px solid #FFD000;
+    border: 1px solid #185ABD;
     color: white;
-    background-color: #FFD000;
+    background-color: #185ABD;
     justify-content: center;
     border-radius: 5px;
     opacity: 0.75;

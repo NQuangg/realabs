@@ -64,7 +64,7 @@ li {
 }
 
 .btn-login-1 {
-    background-color: #FFD000;
+    background-color: #185ABD;
     padding: 10px;
     border-radius: 5px;
     font-size: 15px;
@@ -86,8 +86,8 @@ li {
 
 .student h1 {
     text-align: center;
-    margin-bottom: 5%;
-    margin-top: 3%;
+    margin-top: 10%;
+    margin-bottom: 10%;
     font-weight: 900;
 }
 
@@ -131,7 +131,7 @@ li {
 }
 
 .stu-2 a:hover {
-    color: #FFD000;
+    color: #185ABD;
 }
 
 /*student*/
@@ -160,7 +160,7 @@ li {
 
 .student-card-1 {
     display: flex;
-    background-color: #FFD000;
+    background-color: #185ABD;
     border-radius: 40px 40px 0px 0px;
 }
 
@@ -177,26 +177,26 @@ li {
 }
 
 .student-card-2 {
-    border: 2px solid #FFD000;
+    border: 2px solid #185ABD;
     border-radius: 0px 0px 40px 40px;
     padding: 10px;
     height: 60%;
 }
 
 #more-btn {
-    border: 1px solid #FFD000;
+    border: 1px solid #185ABD;
     background-color: white;
     padding: 10px;
     font-weight: 700;
     border-radius: 10px;
-    color: #FFD000;
+    color: #185ABD;
     text-decoration: none;
     margin-top: 3%;
     margin-left: 20%;
 }
 
 #more-btn:hover {
-    background: #FFD000;
+    background: #185ABD;
     color: white;
 }
 
