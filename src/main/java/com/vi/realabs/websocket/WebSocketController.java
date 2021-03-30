@@ -53,9 +53,6 @@ public class WebSocketController {
         Map<String, Member> map = document.toObject(Room.class).getMembers();
         Member member = map.get(message.getUserId());
         member.decreaseTabs();
-        if (member.getTabs() == 0) {
-            member.setOnline(false);
-        }
         docRef.update("members."+message.getUserId(), member);
 
         return null;
